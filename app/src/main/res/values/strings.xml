@@ -1,0 +1,66 @@
+<resources>
+    <string name="app_name">תורה ניוז</string>
+    <string name="app_name_d">תורה ניוז הורדות</string>
+    <string name="action_settings">ניהול טאבים</string>
+    <string name="action_man_title">כאן ניתן להחליט אילו טאבים להציג </string>
+
+
+    <string name="main_url">http://www.meirtv.co.il/site/rss/archive_mp3.asp</string>
+    <string name="notif_text">עדכון שיעורים</string>
+    <string name="donate">תרום</string>
+    <string name="donate_url">http://www.meirtv.co.il/Donate/Home/Donate?source=mobile3</string>
+    <string name="more_text">עוד בנושא</string>
+    <string name="rebai">הרב</string>
+    <string name="already_exist">כבר קיים</string>
+    <string name="main_ask">http://old.yeshiva.org.il/rss/?feed=ask</string>
+    <string name="main_7">https://www.inn.co.il/Rss.aspx?act=0.1</string>
+    <string name="harav_sharki">http://www.meirtv.co.il/site/rss/archive_mp3.asp?rabbi=3774</string>
+    <string name="harav_bigon">http://www.meirtv.co.il/site/rss/archive_mp3.asp?rabbi=3773</string>
+    <string name="harav_eyal">http://www.meirtv.co.il/site/rss/archive_mp3.asp?rabbi=4075</string>
+    <string name="harav_lon">http://www.meirtv.co.il/site/rss/archive_mp3.asp?rabbi=3977</string>
+    <string name="harav_eng">http://www.meirtv.co.il/site/rss/archive_mp3.asp?rabbi=4086</string>
+    <string name="harav_aviner">http://www.meirtv.co.il/site/rss/archive_mp3.asp?rabbi=3775</string>
+    <string name="harav_zaga">http://www.meirtv.co.il/site/rss/archive_mp3.asp?rabbi=3823</string>
+    <string name="harav_kashtiel">http://www.meirtv.co.il/site/rss/archive_mp3.asp?rabbi=3951</string>
+    <string name="harav_tikun">http://www.meirtv.co.il/site/rss/archive_mp3.asp?cat_id=3913</string>
+    <string name="harav_avot">http://www.meirtv.co.il/site/rss/archive_mp3.asp?cat_id=3912</string>
+    <string name="harav_parasha">http://www.meirtv.co.il/site/rss/archive_mp3.asp?cat_id=3705</string>
+    <string name="harav_yomi">http://www.meirtv.co.il/site/rss/archive_mp3.asp?cat_id=5008</string>
+    <string name="submit">אישור</string>
+    <string name="submit_delete">מחיקה</string>
+    <string name="submit_share">שיתוף</string>
+    <string name="start_text">חדשות, שאלות רב ושעורי תורה להאזנה\nללא תמונות ופרסומות\nלחיצה על שורה עם &#9658; משמיעה שיעור באמצעות נגן ללא הורדת הקובץ למכשיר \nכששומעים שיעור ניתן לצאת מהאפליקציה, לכבות מסך ולהמשיך לשמוע ולשלוט על האודיו מחלון ההתראות\nלחיצה ארוכה על שורה מאפשרת הורדת קובץ למכשיר - טאב הורדות יתווסף אוטומטית\nמבוססת על פיד RSS מהאתרים: ישיבה, מכון מאיר וערוץ שבע\n</string>
+    <string name="start_text2">  לחיצה ארוכה מאפשרת הורדת קובץ למכשיר - טאב הורדות יתווסף אוטומטית\nבטאב הורדות לחיצה ארוכה על שורה תאפשר שיתוף או מחיקה לשם פינוי מקום</string>
+    <string name="start_title">Jew RSS</string>
+
+    <string name="return_all">התראה כל יום חול בחמש בערב</string>
+    <string name="main_7_m">http://www.inn.co.il/Rss.aspx</string>
+    <string name="no_record">תקלה - בדוק את חיבור האינטרנט</string>
+    <string name="notif_text_toch">יש להקיש כדי לשמוע</string>
+    <string name="submit_">בחר פיד</string>
+    <string name="action_man_sub_title">ניתן לחזור לכאן תמיד על ידי לחיצה על 3 הנקודות שבראש המסך הראשי</string>
+    <string name="harav_emuna">http://www.meirtv.co.il/site/rss/archive_mp3.asp?cat_id=3700</string>
+    <string name="harav_orot">http://www.meirtv.co.il/site/rss/archive_mp3.asp?cat_id=3706</string>
+    <string name="harav_kuk">http://www.meirtv.co.il/site/rss/archive_mp3.asp?cat_id=3714</string>
+    <string name="harav_ram">http://www.meirtv.co.il/site/rss/archive_mp3.asp?cat_id=3716</string>
+    <string name="harav_ramchal">http://www.meirtv.co.il/site/rss/archive_mp3.asp?cat_id=3725</string>
+    <string name="harav_med">http://www.meirtv.co.il/site/rss/archive_mp3.asp?cat_id=5013</string>
+    <string name="notif_download_end">הורדה הסתיימה</string>
+    <string name="delete">מחיקה או שיתוף</string>
+    <string name="delete_text">האם אתה בטוח?</string>
+    <string name="download_title">הורדת קובץ למכשיר</string>
+    <string name="download_text">האם אתה בטוח?</string>
+    <string name="main_like">http://www.meirtv.co.il/site/rss/hp_recommender_mp3.asp</string>
+    <string name="main_bra">https://yhb.org.il/category/בית-מדרש/mp3/feed/</string>
+    <string name="main_b">https://yhb.org.il/feed/</string>
+    <string name="no_media_playing_label">לא מושמע כרגע</string>
+    <string name="pause_label">הפסק</string>
+    <string name="play_label">הפעל</string>
+    <string name="no_downloads">אין הורדות</string>
+    <string name="please_rate">אם נהנית מהאפליקציה, אשמח לקבל דירוג טוב בחנות</string>
+    <string name="please_rate_b1">דרג</string>
+    <string name="please_rate_b2">יום אחר</string>
+    <string name="please_rate_b3">לא, תודה</string>
+
+
+</resources>
