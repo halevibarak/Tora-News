@@ -70,6 +70,13 @@ public class XMLParser extends Observable {
                         currentArticle.setLink(link);
                     }
 
+                }else if (xmlPullParser.getName().equalsIgnoreCase("enclosure")) {
+                    if (insideItem) {
+                        String link = xmlPullParser.nextText();
+                        xmlPullParser.
+                        currentArticle.setLink(link);
+                    }
+
                 }  else if (xmlPullParser.getName().equalsIgnoreCase("description")) {
                     if (insideItem) {
                         String description = xmlPullParser.nextText();
@@ -92,5 +99,13 @@ public class XMLParser extends Observable {
         setChanged();
         notifyObservers(articles);
     }
-
+    public static @Nullable String getAttributeValue(XmlPullParser xpp, String attributeName) {
+        int attributeCount = xpp.getAttributeCount();
+        for (int i = 0; i < attributeCount; i++) {
+            if (xpp.getAttributeName(i).equals(attributeName)) {
+                return xpp.getAttributeValue(i);
+            }
+        }
+        return null;
+    }
 }
