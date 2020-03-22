@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Jew-Stream.iml" filepath="$PROJECT_DIR$/Jew-Stream.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Tora-News.iml" filepath="$PROJECT_DIR$/Tora-News.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

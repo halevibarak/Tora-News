@@ -137,23 +137,28 @@ public class FragmentArticle extends Fragment implements ActionInterface {
             mTimeStamp = System.currentTimeMillis();
             mySwipeRefreshLayout.setRefreshing(true);
             articleModel = ViewModelProviders.of(this, new MyViewModelFactory(App.getInstance(), myTab.getUrl())).get(ArticleModel.class);
-            articleModel.getArticleList().observe(this, articles -> {
-                mySwipeRefreshLayout.setRefreshing(false);
-                if (articles == null || articles.size() == 0) {
-                    errorTextView.setVisibility(View.VISIBLE);
-                    return;
-                }
-                errorTextView.setVisibility(View.GONE);
-                if (mArticles.size() == 0) {
-                    mArticles.addAll(articles);
-                } else {
-                    for (Article ne : articles) {
-                        if (!mArticles.contains(ne))
-                            mArticles.add(ne);
+            if (mArticles.size() == 0){
+                articleModel.getArticleList().observe(this, articles -> {
+                    mySwipeRefreshLayout.setRefreshing(false);
+                    if (articles == null || articles.size() == 0) {
+                        errorTextView.setVisibility(View.VISIBLE);
+                        return;
                     }
-                }
-                adapter.notifyDataSetChanged();
-            });
+                    errorTextView.setVisibility(View.GONE);
+                    if (mArticles.size() == 0) {
+                        mArticles.addAll(articles);
+                    } else {
+                        for (Article ne : articles) {
+                            if (!mArticles.contains(ne))
+                                mArticles.add(ne);
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                });
+            }else {
+                articleModel.refreshData(myTab.getUrl());
+            }
+
         }
 
     }
@@ -252,19 +257,6 @@ public class FragmentArticle extends Fragment implements ActionInterface {
 
     }
 
-    public void updateView() {
-        if (adapter != null) {
-            if (myTab.getTabType() == MyTab.TabType.LOCAL) {
-                String[] files = AppUtility.getMainExternalFolder().list();
-                for (String str : files) {
-                    mArticles.add(new Article(str));
-                }
-            } else {
-                articleModel.refreshData(myTab.getUrl());
-            }
-            adapter.notifyDataSetChanged();
-        }
-    }
 
     @Override
     public void onDestroyView() {

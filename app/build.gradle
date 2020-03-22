@@ -25,8 +25,8 @@ android {
         applicationId "com.barak.tabs"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 21
-        versionName "1.21"
+        versionCode 25
+        versionName "1.25"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -71,5 +71,7 @@ dependencies {
     // explicitly depend on RxJava's latest version for bug fixes and new features.
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
-
+20
+    424
+    683809
 }

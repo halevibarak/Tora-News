@@ -137,6 +137,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         });
                     }
                     else {
+                        newsViewHolder.playView.setVisibility(View.GONE);
                         newsViewHolder.itemView.setOnClickListener(v -> {
                             mLisenner.goBrowser(article);
                     });

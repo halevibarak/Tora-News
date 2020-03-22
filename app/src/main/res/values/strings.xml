@@ -13,6 +13,7 @@
     <string name="rebai">הרב</string>
     <string name="already_exist">כבר קיים</string>
     <string name="main_ask">http://old.yeshiva.org.il/rss/?feed=ask</string>
+    <string name="main_y">https://www.yeshiva.org.il/rss/?feed=shiur&amp;type=mp3</string>
     <string name="main_7">https://www.inn.co.il/Rss.aspx?act=0.1</string>
     <string name="harav_sharki">http://www.meirtv.co.il/site/rss/archive_mp3.asp?rabbi=3774</string>
     <string name="harav_bigon">http://www.meirtv.co.il/site/rss/archive_mp3.asp?rabbi=3773</string>
@@ -51,8 +52,8 @@
     <string name="download_title">הורדת קובץ למכשיר</string>
     <string name="download_text">האם אתה בטוח?</string>
     <string name="main_like">http://www.meirtv.co.il/site/rss/hp_recommender_mp3.asp</string>
-    <string name="main_bra">https://yhb.org.il/category/בית-מדרש/mp3/feed/</string>
     <string name="main_b">https://yhb.org.il/feed/</string>
+    <string name="main_br">https://yhb.org.il/category/mp3/feed/</string>
     <string name="no_media_playing_label">לא מושמע כרגע</string>
     <string name="pause_label">הפסק</string>
     <string name="play_label">הפעל</string>

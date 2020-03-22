@@ -18,24 +18,23 @@ import java.util.*
 
 class ArticleModel(application: Application, mParam: String) : AndroidViewModel(application) {
 
-    val NOTIF_ALLOW = "NOTIF_ALLOW"
-    private var articleList: JsonLiveData? = null
+    var articleList: JsonLiveData
     private var xmlParser: XMLParser? = null
-
+    private var mTmeStamp: Long = 0
 
     private val refresh = MutableLiveData<Int>()
 
 
     init {
-        if (articleList == null)
-            articleList = JsonLiveData(this.getApplication(), mParam)
-    }
-
-    fun getArticleList(): MutableLiveData<List<Article>>? {
-        return articleList
+        articleList = JsonLiveData(this.getApplication(), mParam)
     }
 
     fun refreshData(mParam: String) {
+        if (System.currentTimeMillis() > mTmeStamp + 5000) {
+            articleList.LoadData(this.getApplication(), mParam)
+        }
+    }
+    fun refreshData_(mParam: String) {
         refresh.value = 0
         articleList = JsonLiveData(this.getApplication(), mParam)
     }
@@ -49,6 +48,7 @@ class ArticleModel(application: Application, mParam: String) : AndroidViewModel(
         }
 
         override fun update(o: Observable, data: Any) {
+            mArticles.clear()
             for (a in data as ArrayList<Article>) {
                 mArticles.add(a)
             }
@@ -57,7 +57,7 @@ class ArticleModel(application: Application, mParam: String) : AndroidViewModel(
 
         }
 
-        private fun LoadData(context: Context, mParam: String) {
+        fun LoadData(context: Context, mParam: String) {
             val stringRequest = StringRequest(Request.Method.POST, mParam,
                     { response ->
                         xmlParser = XMLParser(mParam.contains("meir"))
