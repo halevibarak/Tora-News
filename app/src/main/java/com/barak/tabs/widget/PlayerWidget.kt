@@ -41,7 +41,7 @@ class PlayerWidget : AppWidgetProvider() {
         private val PREFS_NAME = "PlayerWidgetPrefs"
         private val KEY_ENABLED = "WidgetEnabled"
 
-        fun update(instance: App) {
+        fun update(instance: Context) {
             PlayerWidgetJobService.updateWidget(instance)
         }
 

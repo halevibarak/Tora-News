@@ -27,8 +27,8 @@ class PlayerWidgetJobService : JobIntentService() {
         if (!PlayerWidget.isEnabled(applicationContext)) {
             return
         }
-        if (App.getInstance().service != null) {
-            playbackService = App.getInstance().service
+        if (App.getService() != null) {
+            playbackService = App.getService()
         }
         updateViews()
     }
@@ -48,9 +48,9 @@ class PlayerWidgetJobService : JobIntentService() {
         if (playbackService != null) {
             views.setOnClickPendingIntent(R.id.layout_left, pitMain)
 
-            views.setTextViewText(R.id.txtvTitle, playbackService!!._getTitle())
+            views.setTextViewText(R.id.txtvTitle, playbackService!!.getTitle())
             views.setViewVisibility(R.id.txtvTitle, View.VISIBLE)
-            if (playbackService!!._isPlayingNow()) {
+            if (playbackService!!.isPlayingNow()) {
                 views.setImageViewResource(R.id.butPlay, R.drawable.pause_g)
                 views.setContentDescription(R.id.butPlay, getString(R.string.pause_label))
             } else {
@@ -59,11 +59,11 @@ class PlayerWidgetJobService : JobIntentService() {
             }
             views.setOnClickPendingIntent(R.id.butPlay, pitPlay)
         } else {
-            if (App.getInstance().lastArticle == null) {
+            if (App.getLastArticle() == null) {
                 views.setTextViewText(R.id.txtvTitle,
                         this.getString(R.string.app_name))
             } else {
-                views.setTextViewText(R.id.txtvTitle, App.getInstance().lastArticle.title)
+                views.setTextViewText(R.id.txtvTitle, App.getLastArticle().title)
             }
             views.setOnClickPendingIntent(R.id.layout_left, pitMain)
             views.setOnClickPendingIntent(R.id.butPlay, pitPlay)

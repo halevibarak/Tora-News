@@ -38,6 +38,7 @@ import com.barak.tabs.R;
 import com.barak.tabs.adapter.ViewPagerAdapter;
 import com.barak.tabs.app.App;
 import com.barak.tabs.app.AppUtility;
+import com.barak.tabs.app.Singleton;
 import com.barak.tabs.manage.ManageActivity;
 import com.barak.tabs.model.ChangeLogDialog;
 import com.barak.tabs.model.MyTab;
@@ -188,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
                     }
                 }, error -> {
         });
-        App.getInstance().addToRequestQueue(stringRequest);
+        Singleton.Companion.getInstance(this).addToRequestQueue(stringRequest);
     }
 
 
@@ -248,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         if (App.getInstance().getService() != null) {
             mMP3Service = App.getInstance().getService();
         }
-        if (mMP3Service != null && mMP3Service._isPlayOrPause()) {
+        if (mMP3Service != null && mMP3Service.isPlayOrPause()) {
             mMP3Service.stop4Play();
             mMP3Service.play(article.getLink(), article.getTitle(), playerView);
             return;
@@ -439,7 +440,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
             mMP3Service = ((Mp3Binder) service).getService();
             App.getInstance().setService(mMP3Service);
             mMP3Service.bindPlayerView(playerView);
-            if (mArticle != null && !mMP3Service._isPlayingNow()) {
+            if (mArticle != null && !mMP3Service.isPlayingNow()) {
                 mMP3Service.stop();
                 mMP3Service.play(mArticle.getLink(), mArticle.getTitle(), playerView);
             }
@@ -462,7 +463,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         if (mMP3Service == null) {
             mMP3Service = App.getInstance().getService();
         }
-        if (mMP3Service != null && mMP3Service._isPlayOrPause()) {
+        if (mMP3Service != null && mMP3Service.isPlayOrPause()) {
             Intent it = new Intent(this, Mp3ServiceImpl.class);
             startService(it);
             bindService(it, mConnection, 0);

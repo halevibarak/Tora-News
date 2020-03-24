@@ -36,8 +36,8 @@ public class App extends Application {
     private static final String TABS = "TABS_NEW";
     private RequestQueue mRequestQueue;
     private static App mInstance;
-    private Mp3Service service;
-    private Article lastArticle;
+    private static Mp3Service service;
+    private static Article mLastArticle;
 
     @Override
     public void onCreate() {
@@ -105,7 +105,6 @@ public class App extends Application {
             start_.add(new MyTab("מכון מאיר", getInstance().getString(R.string.main_url), MyTab.TabType.MEIR, false));
             start_.add(new MyTab("מאיר מומלצים", getInstance().getString(R.string.main_like), MyTab.TabType.MEIR, false));
             start_.add(new MyTab("ברכה פיד", getInstance().getString(R.string.main_b), MyTab.TabType.REST, false));
-            start_.add(new MyTab("ברכה שמיעה", getInstance().getString(R.string.main_br), MyTab.TabType.REST, true));
             start_.add(new MyTab("ישיבה", getInstance().getString(R.string.main_y), MyTab.TabType.REST, true));
             start_.add(new MyTab("שאלות ישיבה", getInstance().getString(R.string.main_ask), MyTab.TabType.REST, false));
             start_.add(new MyTab("ערוץ 7", getInstance().getString(R.string.main_7), MyTab.TabType.REST, true));
@@ -149,19 +148,19 @@ public class App extends Application {
         return out;
     }
 
-    public void setService(Mp3Service service) {
-        this.service = service;
+    public static void setService(Mp3Service service_) {
+        service = service_;
     }
 
-    public Mp3Service getService() {
+    public static Mp3Service getService() {
         return service;
     }
 
-    public Article getLastArticle() {
-        return lastArticle;
+    public static Article getLastArticle() {
+        return mLastArticle;
     }
 
-    public void setLastArticle(Article lastArticle) {
-        this.lastArticle = lastArticle;
+    public static void setLastArticle(Article lastArticle) {
+        mLastArticle = lastArticle;
     }
 }

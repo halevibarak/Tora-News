@@ -10,6 +10,7 @@ import com.android.volley.toolbox.StringRequest
 import com.barak.tabs.Parser.Article
 import com.barak.tabs.Parser.XMLParser
 import com.barak.tabs.app.App
+import com.barak.tabs.app.Singleton
 import java.util.*
 
 /**
@@ -76,7 +77,7 @@ class ArticleModel(application: Application, mParam: String) : AndroidViewModel(
                     3000,
                     DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                     DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
-            App.getInstance().addToRequestQueue(stringRequest)
+            Singleton.getInstance(context).addToRequestQueue(stringRequest)
 
 
         }

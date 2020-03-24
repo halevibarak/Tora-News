@@ -5,10 +5,8 @@ import android.app.Notification.GROUP_ALERT_SUMMARY
 import android.app.PendingIntent
 import android.app.Service
 import android.app.TaskStackBuilder
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -16,6 +14,7 @@ import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.content.LocalBroadcastManager
+import android.util.Log
 import android.widget.RemoteViews
 import com.barak.tabs.Parser.Article
 import com.barak.tabs.R
@@ -41,7 +40,6 @@ import java.io.IOException
 class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMediaSource.EventListener {
     private var mIsPause: Boolean = false
     private var mNumMessages: Int = 0
-    private var mWifiLock: WifiManager.WifiLock? = null
     private var mIsPlaying: Boolean = false
     private var mTitle: String? = ""
     private var mMainHandler: Handler? = null
@@ -51,6 +49,7 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
 
 
     override fun onBind(arg0: Intent): IBinder? {
+        Log.e("barak",this.toString())
         return Mp3Binder(this)
     }
 
@@ -69,8 +68,8 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
                 }
                 mUrl = AppUtility.getMainExternalFolder().absolutePath + "/" + mTitle
                 val art = Article(mTitle!! + " ", mUrl!!, "", null)
-                App.getInstance().lastArticle = art
-                App.getInstance().service = this
+                App.setLastArticle(art)
+                App.setService(this)
                 stop4Play()
                 play(mUrl!!, mTitle!!, null)
                 return Service.START_NOT_STICKY
@@ -82,14 +81,14 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
             }
 
         }
-        return Service.START_NOT_STICKY
+        return START_NOT_STICKY
     }
 
     private fun playPause() {
         if (mPlayer == null) {
-            if (App.getInstance().lastArticle != null) {
-                App.getInstance().service = this
-                play(App.getInstance().lastArticle.link, App.getInstance().lastArticle.title, null)
+            if (App.getLastArticle() != null) {
+                App.setService(this)
+                play(App.getLastArticle().link, App.getLastArticle().title, null)
             }
 
             return
@@ -104,22 +103,19 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             showNotificationO(mIsPause)
         } else {
-            displayNotification(App.getInstance(), mIsPause)
+            displayNotification(mIsPause)
         }
-        PlayerWidget.update(App.getInstance())
-        ListWidget.update(App.getInstance())
+        PlayerWidget.update(applicationContext)
+        ListWidget.update(applicationContext)
     }
 
     override fun play(url: String, title: String, playerView_: PlayerControlView?) {
 
-        PlayerWidget.update(App.getInstance())
-        ListWidget.update(App.getInstance())
+        PlayerWidget.update(applicationContext)
+        ListWidget.update(applicationContext)
         if (title != null) mTitle = title
-        mWifiLock = (App.getInstance().applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager)
-                .createWifiLock(WifiManager.WIFI_MODE_FULL, "mylock")
         if (url != null && !mIsPlaying && !mIsPause) {
             try {
-                mWifiLock?.acquire()
                 mUrl = url.replace(" ", "%20")
                 val dataSourceFactory = DefaultDataSourceFactory(applicationContext, "ExoplayerDemo")
                 val extractorsFactory = DefaultExtractorsFactory()
@@ -131,7 +127,7 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
                         this)
                 stop4Play()
                 if (mPlayer == null) {
-                    mPlayer = ExoPlayerFactory.newSimpleInstance(App.getInstance())
+                    mPlayer = ExoPlayerFactory.newSimpleInstance(applicationContext)
                 }
 
                 mPlayer?.addListener(this)
@@ -150,7 +146,7 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     showNotificationO(false)
                 } else {
-                    displayNotification(App.getInstance(), false)
+                    displayNotification(false)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -158,7 +154,7 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
             }
 
         }
-        PlayerWidget.update(App.getInstance())
+        PlayerWidget.update(applicationContext)
 
     }
 
@@ -168,19 +164,14 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
             mIsPause = false
             mPlayer?.release()
             mIsPlaying = false
-            mWifiLock?.let {
-                if (it.isHeld) {
-                    it.release()
-                }
-            }
             mPlayerView = null
             stopForeground(true)
             stopSelf()
         }
-        PlayerWidget.update(App.getInstance())
+        PlayerWidget.update(applicationContext)
     }
 
-    override fun _isPlayOrPause(): Boolean {
+    override fun isPlayOrPause(): Boolean {
         return mIsPlaying || mIsPause
     }
 
@@ -223,10 +214,9 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
         views.setImageViewResource(R.id.play_v, if (showPlay) R.drawable.play_g else R.drawable.pause_g)
         views.setOnClickPendingIntent(R.id.stop_v, pitStop)
         views.setTextViewText(R.id.text_v, mTitle)
-        val noti = NotificationHelper(App.getInstance())
-        var nb: Notification.Builder? = null
+        val noti = NotificationHelper(applicationContext)
 
-        nb = noti.getNotification1(this.getString(R.string.app_name), "")
+        val nb = noti.getNotification1(this.getString(R.string.app_name), "")
         nb!!.setGroupAlertBehavior(GROUP_ALERT_SUMMARY)
                 .setGroup(getString(R.string.app_name))
                 .setGroupSummary(false)
@@ -251,14 +241,14 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
     }
 
 
-    protected fun displayNotification(context: Context, showPlay: Boolean) {
-        val mBuilder = NotificationCompat.Builder(App.getInstance(), PRIMARY_CHANNEL)
-        mBuilder.setContentTitle(context.getString(R.string.app_name))
-        mBuilder.setContentText(context.getString(R.string.notif_text))
+    private fun displayNotification( showPlay: Boolean) {
+        val mBuilder = NotificationCompat.Builder(applicationContext, PRIMARY_CHANNEL)
+        mBuilder.setContentTitle(applicationContext.getString(R.string.app_name))
+        mBuilder.setContentText(applicationContext.getString(R.string.notif_text))
         mBuilder.setSmallIcon(R.drawable.ic_small)
         mBuilder.setNumber(++mNumMessages)
-        val resultIntent = Intent(App.getInstance(), MainActivity::class.java)
-        val stackBuilder = TaskStackBuilder.create(App.getInstance())
+        val resultIntent = Intent(applicationContext, MainActivity::class.java)
+        val stackBuilder = TaskStackBuilder.create(applicationContext)
         stackBuilder.addParentStack(MainActivity::class.java)
         stackBuilder.addNextIntent(resultIntent)
         val itPlayPause = Intent(this, Mp3ServiceImpl::class.java)
@@ -286,11 +276,10 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
     override fun onDestroy() {
         super.onDestroy()
         mPlayer?.release()
-        mWifiLock = null
         mMainHandler = null
         mPlayer = null
         mPlayerView = null
-
+App.setService(null)
 
     }
 
@@ -355,12 +344,12 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
         LocalBroadcastManager.getInstance(this).sendBroadcast(intentLocal)
     }
 
-    override fun _getTitle(): String {
+    override fun getTitle(): String {
         if (mTitle == null) mTitle = ""
         return mTitle as String
     }
 
-    override fun _isPlayingNow(): Boolean {
+    override fun isPlayingNow(): Boolean {
         return mIsPlaying && !mIsPause
     }
 
