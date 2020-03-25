@@ -56,9 +56,7 @@ public class AppUtility {
     {
         File file = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS), FOLDER_NAME);
-        if (!file.mkdirs()) {
-            Log.e("Directory not created", "Directory not created");
-        }
+        file.mkdirs();
         return file;
     }
 

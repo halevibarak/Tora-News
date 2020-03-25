@@ -31,9 +31,6 @@
         </activity>
 
         <receiver android:name=".notif.MyBroadcastReceiver" />
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="7d30b95220c9ce335ff34d358cd9174299a756e3" />
 
         <activity android:name=".ui.WebActivity" />
         <activity

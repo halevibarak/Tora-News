@@ -11,7 +11,6 @@ import com.barak.tabs.Parser.Article;
 import com.barak.tabs.R;
 import com.barak.tabs.model.MyTab;
 import com.barak.tabs.service.Mp3Service;
-import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.leakcanary.LeakCanary;
@@ -22,8 +21,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
-import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by Barak on 24/08/2017.
@@ -42,7 +39,6 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
         mInstance = this;
         if (LeakCanary.isInAnalyzerProcess(this)) {
             return;

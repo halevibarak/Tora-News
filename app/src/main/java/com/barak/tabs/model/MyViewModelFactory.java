@@ -1,8 +1,8 @@
 package com.barak.tabs.model;
 
 import android.app.Application;
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.barak.tabs.ui.ArticleModel;
 

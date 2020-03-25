@@ -10,10 +10,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
-import android.support.annotation.RequiresApi
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
-import android.support.v4.content.LocalBroadcastManager
+import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import android.util.Log
 import android.widget.RemoteViews
 import com.barak.tabs.Parser.Article
@@ -341,7 +341,7 @@ App.setService(null)
         stop()
         val intentLocal = Intent(DOWNLOAD_TAB_ACTION)
         intentLocal.putExtra(DOWNLOAD_ERR, true)
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intentLocal)
+        androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this).sendBroadcast(intentLocal)
     }
 
     override fun getTitle(): String {
