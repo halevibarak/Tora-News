@@ -5,11 +5,11 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import androidx.core.app.JobIntentService
 import android.view.View
 import android.widget.RemoteViews
+import androidx.core.app.JobIntentService
 import com.barak.tabs.R
-import com.barak.tabs.app.App
+import com.barak.tabs.app.Singleton
 import com.barak.tabs.service.Mp3Service
 import com.barak.tabs.service.Mp3ServiceImpl
 import com.barak.tabs.service.Mp3ServiceImpl.Companion.ACAO_PLAY
@@ -27,21 +27,21 @@ class PlayerWidgetJobService : JobIntentService() {
         if (!PlayerWidget.isEnabled(applicationContext)) {
             return
         }
-        if (App.getService() != null) {
-            playbackService = App.getService()
+        if (Singleton.getInstance().service != null) {
+            playbackService = Singleton.getInstance().service
         }
         updateViews()
     }
 
     fun updateViews() {
-
+applicationContext
         val playerWidget = ComponentName(this, PlayerWidget::class.java)
         val manager = AppWidgetManager.getInstance(this)
         val views = RemoteViews(packageName, R.layout.widget_player)
         val itPlay = Intent(this, Mp3ServiceImpl::class.java)
         itPlay.putExtra(EXTRA_ACAO, ACAO_PLAY)
         val pitPlay = PendingIntent.getService(this, 1, itPlay, 0)
-        val mainIntent = Intent(App.getInstance(), MainActivity::class.java)
+        val mainIntent = Intent(applicationContext, MainActivity::class.java)
         mainIntent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         val pitMain = PendingIntent.getActivity(applicationContext, 4, mainIntent, 0)
 
@@ -59,11 +59,11 @@ class PlayerWidgetJobService : JobIntentService() {
             }
             views.setOnClickPendingIntent(R.id.butPlay, pitPlay)
         } else {
-            if (App.getLastArticle() == null) {
+            if (Singleton.getInstance().LastArticle == null) {
                 views.setTextViewText(R.id.txtvTitle,
                         this.getString(R.string.app_name))
             } else {
-                views.setTextViewText(R.id.txtvTitle, App.getLastArticle().title)
+                views.setTextViewText(R.id.txtvTitle, Singleton.getInstance().LastArticle!!.title)
             }
             views.setOnClickPendingIntent(R.id.layout_left, pitMain)
             views.setOnClickPendingIntent(R.id.butPlay, pitPlay)
@@ -74,7 +74,7 @@ class PlayerWidgetJobService : JobIntentService() {
 
     companion object {
         fun updateWidget(context: Context) {
-            JobIntentService.enqueueWork(context, PlayerWidgetJobService::class.java, 0, Intent(context, PlayerWidgetJobService::class.java))
+            enqueueWork(context, PlayerWidgetJobService::class.java, 0, Intent(context, PlayerWidgetJobService::class.java))
         }
     }
 

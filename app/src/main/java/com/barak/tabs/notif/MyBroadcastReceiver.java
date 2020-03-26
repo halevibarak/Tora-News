@@ -35,7 +35,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void addNotification(Context context) {
-        NotificationHelper noti = new NotificationHelper(App.getInstance());
+        NotificationHelper noti = new NotificationHelper(context);
         Notification.Builder nb = null;
         nb = noti.getNotification1(context.getString(R.string.notif_text), context.getString(R.string.notif_text_toch));
         nb.setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.ic));
@@ -49,14 +49,14 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     }
 
     protected void displayNotification(Context context) {
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(App.getInstance());
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
         mBuilder.setContentTitle(context.getString(R.string.notif_text));
         mBuilder.setContentText(context.getString(R.string.notif_text_toch));
         mBuilder.setSmallIcon(R.drawable.ic_small);
         mBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.ic));
         mBuilder.setNumber(++numMessages);
-        Intent resultIntent = new Intent(App.getInstance(), MainActivity.class);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(App.getInstance());
+        Intent resultIntent = new Intent(context, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addParentStack(MainActivity.class);
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);

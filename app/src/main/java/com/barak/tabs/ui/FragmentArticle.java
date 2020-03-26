@@ -90,7 +90,7 @@ public class FragmentArticle extends Fragment implements ActionInterface {
         mySwipeRefreshLayout.setOnRefreshListener(() -> modelConfig()
         );
         myTab = ((MyTab) getArguments().getSerializable(FRAGTYPE));
-        boolean showMore = (myTab.getUrl().equals(App.getInstance().getString(R.string.main_url)));
+        boolean showMore = (myTab.getUrl().equals(getContext().getString(R.string.main_url)));
         adapter = new RecyclerViewAdapter(mArticles, showMore, this, myTab.getTabType());
 
         if (myTab.getTabType() == MyTab.TabType.LOCAL) {
@@ -138,7 +138,7 @@ public class FragmentArticle extends Fragment implements ActionInterface {
         } else {
             mTimeStamp = System.currentTimeMillis();
             mySwipeRefreshLayout.setRefreshing(true);
-            articleModel = ViewModelProviders.of(this, new MyViewModelFactory(App.getInstance(), myTab.getUrl())).get(ArticleModel.class);
+            articleModel = ViewModelProviders.of(this, new MyViewModelFactory(App.getInstance_(), myTab.getUrl())).get(ArticleModel.class);
             if (mArticles.size() == 0){
                 articleModel.getArticleList().observe(this, articles -> {
                     mySwipeRefreshLayout.setRefreshing(false);

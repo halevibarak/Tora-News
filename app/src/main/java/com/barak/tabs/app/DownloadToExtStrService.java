@@ -47,21 +47,21 @@ public class DownloadToExtStrService extends IntentService {
         intentLocal.putExtra(DOWNLOAD_TAB, true);
         if (success) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                addNotification(App.getInstance());
+                addNotification(getApplicationContext());
             } else {
-                displayNotification(App.getInstance());
+                displayNotification(getApplicationContext());
             }
         } else {
             intentLocal.putExtra(DOWNLOAD_ERR, true);
         }
         LocalBroadcastManager.getInstance(this).sendBroadcast(intentLocal);
-        PlayerWidget.Companion.update(App.getInstance());
-        ListWidget.update(App.getInstance());
+        PlayerWidget.Companion.update(getApplicationContext());
+        ListWidget.update(getApplicationContext());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void addNotification(Context context) {
-        NotificationHelper noti = new NotificationHelper(App.getInstance());
+        NotificationHelper noti = new NotificationHelper(getApplicationContext());
         Notification.Builder nb = null;
         nb = noti.getNotification1(context.getString(R.string.notif_download_end), fileName);
         nb.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic));
@@ -76,15 +76,15 @@ public class DownloadToExtStrService extends IntentService {
     }
 
     protected void displayNotification(Context context) {
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(App.getInstance());
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext());
         mBuilder.setContentTitle(context.getString(R.string.notif_download_end));
         mBuilder.setContentText(fileName);
         mBuilder.setSmallIcon(R.drawable.ic_small);
         mBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic));
         mBuilder.setNumber(++numMessages);
-        Intent resultIntent = new Intent(App.getInstance(), MainActivity.class);
+        Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
         resultIntent.putExtra(DOWNLOAD_TAB, true);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(App.getInstance());
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
         stackBuilder.addParentStack(MainActivity.class);
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);

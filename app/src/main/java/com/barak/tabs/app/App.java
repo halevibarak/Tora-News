@@ -4,16 +4,10 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
-import com.barak.tabs.Parser.Article;
 import com.barak.tabs.R;
 import com.barak.tabs.model.MyTab;
-import com.barak.tabs.service.Mp3Service;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.squareup.leakcanary.LeakCanary;
 
 import org.json.JSONArray;
 
@@ -31,39 +25,26 @@ public class App extends Application {
     public static final String TAG = App.class
             .getSimpleName();
     private static final String TABS = "TABS_NEW";
-    private RequestQueue mRequestQueue;
     private static App mInstance;
-    private static Mp3Service service;
-    private static Article mLastArticle;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
         mInstance = this;
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            return;
-        }
-        LeakCanary.install(this);
+//        if (LeakCanary.isInAnalyzerProcess(this)) {
+//            return;
+//        }
+//        LeakCanary.install(this);
     }
 
-    public static synchronized App getInstance() {
+    private static synchronized App getInstance() {
+        return mInstance;
+    }
+    public static synchronized App getInstance_() {
         return mInstance;
     }
 
-
-    public RequestQueue getRequestQueue() {
-        if (mRequestQueue == null) {
-            mRequestQueue = Volley.newRequestQueue(getApplicationContext());
-        }
-
-        return mRequestQueue;
-    }
-
-
-    public <T> void addToRequestQueue(Request<T> req) {
-        req.setTag(TAG);
-        getRequestQueue().add(req);
-    }
 
 
     public static void setStringArrayPref_(List<MyTab> arrayList) {
@@ -98,10 +79,10 @@ public class App extends Application {
         String json = appSharedPrefs.getString(TABS, "");
         if (json.equals("")) {
             ArrayList<MyTab> start_ = new ArrayList<>();
+            start_.add(new MyTab("ישיבה", getInstance().getString(R.string.main_y), MyTab.TabType.REST, true));
             start_.add(new MyTab("מכון מאיר", getInstance().getString(R.string.main_url), MyTab.TabType.MEIR, false));
             start_.add(new MyTab("מאיר מומלצים", getInstance().getString(R.string.main_like), MyTab.TabType.MEIR, false));
             start_.add(new MyTab("ברכה פיד", getInstance().getString(R.string.main_b), MyTab.TabType.REST, false));
-            start_.add(new MyTab("ישיבה", getInstance().getString(R.string.main_y), MyTab.TabType.REST, true));
             start_.add(new MyTab("שאלות ישיבה", getInstance().getString(R.string.main_ask), MyTab.TabType.REST, false));
             start_.add(new MyTab("ערוץ 7", getInstance().getString(R.string.main_7), MyTab.TabType.REST, true));
             start_.add(new MyTab("מבזקים 7", getInstance().getString(R.string.main_7_m), MyTab.TabType.REST, false));
@@ -144,19 +125,5 @@ public class App extends Application {
         return out;
     }
 
-    public static void setService(Mp3Service service_) {
-        service = service_;
-    }
 
-    public static Mp3Service getService() {
-        return service;
-    }
-
-    public static Article getLastArticle() {
-        return mLastArticle;
-    }
-
-    public static void setLastArticle(Article lastArticle) {
-        mLastArticle = lastArticle;
-    }
 }

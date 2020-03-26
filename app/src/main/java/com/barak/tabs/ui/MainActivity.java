@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,6 +39,7 @@ import com.barak.tabs.adapter.ViewPagerAdapter;
 import com.barak.tabs.app.App;
 import com.barak.tabs.app.AppUtility;
 import com.barak.tabs.app.Singleton;
+import com.barak.tabs.app.VolleySingleton;
 import com.barak.tabs.manage.ManageActivity;
 import com.barak.tabs.model.ChangeLogDialog;
 import com.barak.tabs.model.MyTab;
@@ -55,6 +57,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Observable;
@@ -94,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
     private boolean isFirstRun;
     private boolean secondRun;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -125,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         if (intent.getBooleanExtra(DOWNLOAD_TAB, false)) {
             viewPager.setCurrentItem(App.getVisTabs().size() - 1);
         }
-        if (!ConnectivityHelper.isConnectedToNetwork(App.getInstance().getApplicationContext())) {
+        if (!ConnectivityHelper.isConnectedToNetwork(getApplicationContext())) {
             viewPager.setCurrentItem(App.getVisTabs().size() - 1);
             Snackbar.make(progressBar, getString(R.string.no_record), Snackbar.LENGTH_LONG).show();
 
@@ -135,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
 
     private void startAlert() {
         Intent intent = new Intent(this, MyBroadcastReceiver.class);
-        AlarmUtils.cancelAllAlarms(App.getInstance(), intent);
+        AlarmUtils.cancelAllAlarms(this, intent);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         if (calendar.get(Calendar.HOUR_OF_DAY) >= NOTIF_HOUR) {
@@ -149,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         for (int i = 0; i < 15; i++) {
             day = calendar.get(Calendar.DAY_OF_WEEK);
             if (day >= 0 && day <= 5) {
-                AlarmUtils.addAlarm(App.getInstance(), intent, id, calendar.getTimeInMillis());
+                AlarmUtils.addAlarm(this, intent, id, calendar.getTimeInMillis());
             }
             calendar.add(Calendar.DAY_OF_YEAR, 1);
             id++;
@@ -193,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
                     }
                 }, error -> {
         });
-        Singleton.Companion.getInstance(this).addToRequestQueue(stringRequest);
+        VolleySingleton.Companion.getInstance(this).addToRequestQueue(stringRequest);
     }
 
 
@@ -243,15 +247,15 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
     @Override
     public void removeAddDownloadTab() {
         viewPagerAdapter.updatePages(App.getVisTabs());
-        PlayerWidget.Companion.update(App.getInstance());
-        ListWidget.update(App.getInstance());
+        PlayerWidget.Companion.update(this);
+        ListWidget.update(this);
     }
 
     public void playMp(Article article) {
-        App.getInstance().setLastArticle(article);
+        Singleton.Companion.getInstance().setLastArticle(article);
         registerReceiver();
-        if (App.getInstance().getService() != null) {
-            mMP3Service = App.getInstance().getService();
+        if (Singleton.Companion.getInstance().getService() != null) {
+            mMP3Service = Singleton.Companion.getInstance().getService();
         }
         if (mMP3Service != null && mMP3Service.isPlayOrPause()) {
             mMP3Service.stop4Play();
@@ -272,8 +276,8 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
     }
 
     public void checkFirstRun() {
-         isFirstRun = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean("isFirstRun", true);
-         secondRun = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean("isSecondRun", true);
+        isFirstRun = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean("isFirstRun", true);
+        secondRun = getSharedPreferences(PREFERENCE, MODE_PRIVATE).getBoolean("isSecondRun", true);
 
         if (isFirstRun) {
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -422,7 +426,8 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
     }
 
     public void updateTabs(MainActivity mainActivity) {
-        DisposableObserver<Boolean> d = _getDisposableObserver();
+        WeakReference<MainActivity> activityWeakReference = new WeakReference<>(mainActivity);
+        DisposableObserver<Boolean> d = _getDisposableObserver(activityWeakReference);
 
         _getObservable()
                 .subscribeOn(Schedulers.io())
@@ -442,7 +447,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             mMP3Service = ((Mp3Binder) service).getService();
-            App.getInstance().setService(mMP3Service);
+            Singleton.Companion.getInstance().setService(mMP3Service);
             mMP3Service.bindPlayerView(playerView);
             if (mArticle != null && !mMP3Service.isPlayingNow()) {
                 mMP3Service.stop();
@@ -454,9 +459,11 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             mMP3Service = null;
-            App.getInstance().setService(null);
-            playerView.hide();
-            playerView.setPlayer(null);
+            Singleton.Companion.getInstance().setService(null);
+            if (playerView != null) {
+                playerView.hide();
+                playerView.setPlayer(null);
+            }
             mBound = false;
         }
     };
@@ -465,9 +472,9 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
     protected void onStart() {
         super.onStart();
         if (mMP3Service == null) {
-            mMP3Service = App.getInstance().getService();
+            mMP3Service = Singleton.Companion.getInstance().getService();
         }
-        if (mMP3Service != null && mMP3Service.isPlayOrPause()) {
+        if (playerView != null && mMP3Service != null && mMP3Service.isPlayOrPause()) {
             Intent it = new Intent(this, Mp3ServiceImpl.class);
             startService(it);
             bindService(it, mConnection, 0);
@@ -485,7 +492,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         if (mBound) {
             unbindService(mConnection);
             mMP3Service.unBindPlayerView(playerView);
-            App.getInstance().setService(mMP3Service);
+            Singleton.Companion.getInstance().setService(mMP3Service);
         }
         mBound = false;
     }
@@ -501,12 +508,23 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         mRabbiPost = null;
         progressBar = null;
         mArticle = null;
-        playerView.setPlayer(null);
-        playerView = null;
+        releasePlayer();
         _disposables.clear();
     }
 
-    private DisposableObserver<Boolean> _getDisposableObserver() {
+    private void releasePlayer() {
+        if (playerView != null && playerView.getPlayer() != null) {
+            playerView.removeAllViews();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
+
+    private DisposableObserver<Boolean> _getDisposableObserver(WeakReference<MainActivity> activityWeakReference) {
         return new DisposableObserver<Boolean>() {
 
             @Override
@@ -520,8 +538,8 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
                 prefs.edit()
                         .putBoolean(myNewDialog.getSharedKey(), true)
                         .apply();
-                if (myNewDialog.getAction() == 11) {
-                    MainActivity.this.viewPagerAdapter.updatePages(App.getVisTabs());
+                if (myNewDialog.getAction() == 11 && activityWeakReference != null) {
+                    activityWeakReference.get().viewPagerAdapter.updatePages(App.getVisTabs());
                 }
                 myNewDialog = null;
             }
@@ -554,5 +572,15 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
             e.printStackTrace();
         }
     }
-}
 
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (playerView != null && playerView.dispatchKeyEvent(event)) {
+            return true;
+        } else {
+            return super.dispatchKeyEvent(event);
+        }
+    }
+
+}

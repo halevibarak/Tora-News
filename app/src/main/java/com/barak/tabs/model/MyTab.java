@@ -17,7 +17,7 @@ public class MyTab implements Serializable {
     public MyTab(String title, String url, TabType tabType_, boolean visibility) {
         this.title = title;
         this.url = url;
-        this.tabType = tabType_;
+        tabType = tabType_;
         this.mVisibility = visibility;
 
     }

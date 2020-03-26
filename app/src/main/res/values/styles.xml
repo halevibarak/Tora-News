@@ -5,6 +5,7 @@
         <item name="colorPrimary">#3C3F41</item>
         <item name="colorPrimaryDark">#3C3F41</item>
         <item name="colorAccent">#000000</item>
+        <item name="android:windowBackground">@drawable/my_app_background</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

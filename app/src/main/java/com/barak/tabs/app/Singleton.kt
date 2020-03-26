@@ -1,36 +1,24 @@
 package com.barak.tabs.app
 
-import android.content.Context
-import android.util.LruCache
-import com.android.volley.Request
-import com.android.volley.RequestQueue
-import com.android.volley.toolbox.ImageLoader
-import com.android.volley.toolbox.Volley
+
+import com.barak.tabs.Parser.Article
+import com.barak.tabs.service.Mp3Service
 
 /**
  * Created by Barak Halevi on 2020-03-24.
  */
-class Singleton constructor(context: Context) {
+class Singleton {
     companion object {
         @Volatile
         private var INSTANCE: Singleton? = null
-        fun getInstance(context: Context) =
+        fun getInstance() =
                 INSTANCE ?: synchronized(this) {
-                    INSTANCE ?: Singleton(context).also {
+                    INSTANCE ?: Singleton().also {
                         INSTANCE = it
                     }
                 }
     }
 
-
-    val requestQueue: RequestQueue by lazy {
-        // applicationContext is key, it keeps you from leaking the
-        // Activity or BroadcastReceiver if someone passes one in.
-        Volley.newRequestQueue(context.applicationContext)
-    }
-
-    fun <T> addToRequestQueue(req: Request<T>) {
-        requestQueue.add(req)
-    }
-
+     var service: Mp3Service? = null
+     var LastArticle: Article? = null
 }

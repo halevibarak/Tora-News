@@ -22,6 +22,7 @@ import com.barak.tabs.app.App
 import com.barak.tabs.app.AppUtility
 import com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_ERR
 import com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_TAB_ACTION
+import com.barak.tabs.app.Singleton
 import com.barak.tabs.notif.NotificationHelper
 import com.barak.tabs.notif.NotificationHelper.PRIMARY_CHANNEL
 import com.barak.tabs.ui.MainActivity
@@ -68,8 +69,8 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
                 }
                 mUrl = AppUtility.getMainExternalFolder().absolutePath + "/" + mTitle
                 val art = Article(mTitle!! + " ", mUrl!!, "", null)
-                App.setLastArticle(art)
-                App.setService(this)
+                Singleton.getInstance().LastArticle = art
+                Singleton.getInstance().service =this
                 stop4Play()
                 play(mUrl!!, mTitle!!, null)
                 return Service.START_NOT_STICKY
@@ -86,9 +87,9 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
 
     private fun playPause() {
         if (mPlayer == null) {
-            if (App.getLastArticle() != null) {
-                App.setService(this)
-                play(App.getLastArticle().link, App.getLastArticle().title, null)
+            if (Singleton.getInstance().LastArticle != null) {
+                Singleton.getInstance().service=this
+                play(Singleton.getInstance().LastArticle!!.link, Singleton.getInstance().LastArticle!!.title, null)
             }
 
             return
@@ -221,12 +222,8 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
                 .setGroup(getString(R.string.app_name))
                 .setGroupSummary(false)
                 .setVisibility(Notification.VISIBILITY_PUBLIC)
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
-        nb.setDefaults(NotificationCompat.FLAG_FOREGROUND_SERVICE)
         nb.setCustomContentView(views)
-        val resultIntent = Intent(this, MainActivity::class.java)
-        stackBuilder.addParentStack(MainActivity::class.java)
-        stackBuilder.addNextIntent(resultIntent)
+
         val resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
         nb.setContentIntent(resultPendingIntent)
         val notification = nb.build()
@@ -279,7 +276,7 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
         mMainHandler = null
         mPlayer = null
         mPlayerView = null
-App.setService(null)
+        Singleton.getInstance().service=null
 
     }
 
@@ -341,7 +338,7 @@ App.setService(null)
         stop()
         val intentLocal = Intent(DOWNLOAD_TAB_ACTION)
         intentLocal.putExtra(DOWNLOAD_ERR, true)
-        androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this).sendBroadcast(intentLocal)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intentLocal)
     }
 
     override fun getTitle(): String {

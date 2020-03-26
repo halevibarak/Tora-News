@@ -8,11 +8,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import androidx.annotation.NonNull;
 import android.widget.RemoteViews;
 
+import androidx.annotation.NonNull;
+
 import com.barak.tabs.R;
-import com.barak.tabs.app.App;
 import com.barak.tabs.service.Mp3ServiceImpl;
 import com.barak.tabs.ui.MainActivity;
 
@@ -26,39 +26,21 @@ public class ListWidget extends AppWidgetProvider {
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
-        update(App.getInstance());
-//        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_list);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-//            setRemoteAdapter(context, views);
-//        } else {
-//            setRemoteAdapterV11(context, views);
-//        }
-//        Intent mainIntent = new Intent(App.getInstance(), MainActivity.class);
-//        mainIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//        PendingIntent pitMain = PendingIntent.getActivity(context, 4, mainIntent, 0);
-//        views.setOnClickPendingIntent(R.id.widget_layout_main, pitMain);
-//
-//        Intent templateIntent = new Intent(context, Mp3ServiceImpl.class);
-//        templateIntent.putExtra(EXTRA_ACAO, ACAO_PLAY);
-//        templateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-//        PendingIntent templatePendingIntent =PendingIntent.getService(context, 1, templateIntent, 0);
-//        views.setPendingIntentTemplate(R.id.widget_list,
-//                templatePendingIntent);
-//        appWidgetManager.updateAppWidget(appWidgetId, views);
+        update(context);
     }
 
 
     public static void update(Context context) {
         if (context==null)return;
         ComponentName playerWidget = new ComponentName(context, ListWidget.class);
-        AppWidgetManager manager = AppWidgetManager.getInstance(App.getInstance());
+        AppWidgetManager manager = AppWidgetManager.getInstance(context);
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_list);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             setRemoteAdapter(context, views);
         } else {
             setRemoteAdapterV11(context, views);
         }
-        Intent mainIntent = new Intent(App.getInstance(), MainActivity.class);
+        Intent mainIntent = new Intent(context, MainActivity.class);
         mainIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pitMain = PendingIntent.getActivity(context, 4, mainIntent, 0);
         views.setOnClickPendingIntent(R.id.widget_layout_main, pitMain);

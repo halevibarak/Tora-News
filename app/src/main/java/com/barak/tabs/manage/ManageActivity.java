@@ -3,13 +3,14 @@ package com.barak.tabs.manage;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import android.view.View;
 import android.widget.CheckBox;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.barak.tabs.R;
 import com.barak.tabs.app.App;
@@ -66,7 +67,7 @@ public class ManageActivity extends AppCompatActivity {
             } else {
                 editor.putBoolean(NOTIF_ALLOW, false);
                 Intent intent = new Intent(ManageActivity.this, MyBroadcastReceiver.class);
-                AlarmUtils.cancelAllAlarms(App.getInstance(), intent);
+                AlarmUtils.cancelAllAlarms(this, intent);
             }
             editor.apply();
 
@@ -74,7 +75,7 @@ public class ManageActivity extends AppCompatActivity {
     }
     private void startAlert() {
         Intent intent = new Intent(this, MyBroadcastReceiver.class);
-        AlarmUtils.cancelAllAlarms(App.getInstance(), intent);
+        AlarmUtils.cancelAllAlarms(this, intent);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         if (calendar.get(Calendar.HOUR_OF_DAY) >= NOTIF_HOUR) {
@@ -88,7 +89,7 @@ public class ManageActivity extends AppCompatActivity {
         for (int i = 0; i < 15; i++) {
             day = calendar.get(Calendar.DAY_OF_WEEK);
             if (day >= 0 && day <= 5) {
-                AlarmUtils.addAlarm(App.getInstance(), intent, id, calendar.getTimeInMillis());
+                AlarmUtils.addAlarm(this, intent, id, calendar.getTimeInMillis());
             }
             calendar.add(Calendar.DAY_OF_YEAR, 1);
             id++;
