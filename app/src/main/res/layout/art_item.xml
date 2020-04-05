@@ -2,16 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="45dp"
+    android:background="@color/accent_blue"
     android:orientation="horizontal">
 
     <androidx.appcompat.widget.AppCompatCheckBox
         android:id="@+id/chk_view"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginRight="5dp"
-android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginLeft="15dp"
-         />
+        android:layout_marginRight="5dp" />
     <TextView
         android:id="@+id/title_text"
         android:layout_width="0dp"
