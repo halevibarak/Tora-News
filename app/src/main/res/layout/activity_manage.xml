@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/accent_blue"
     android:orientation="vertical">
 
     <TextView
@@ -71,7 +72,8 @@
         android:padding="4dp"
         android:paddingRight="16dp"
         android:text="@string/return_all"
-        android:textColor="@color/accent_blue"
+        android:textColor="@color/black"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
