@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -26,14 +27,19 @@ import com.barak.tabs.R;
 import com.barak.tabs.adapter.RecyclerViewAdapter;
 import com.barak.tabs.app.App;
 import com.barak.tabs.app.AppUtility;
+import com.barak.tabs.app.Singleton;
 import com.barak.tabs.model.MyTab;
 import com.barak.tabs.model.MyViewModelFactory;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_TAB_ACTION;
+import static com.barak.tabs.ui.ArticleModel.NOTIF_ALLOW;
+import static com.barak.tabs.ui.ArticleModel.START_ALLOW;
 
 
 public class FragmentArticle extends Fragment implements ActionInterface {
@@ -129,7 +135,7 @@ public class FragmentArticle extends Fragment implements ActionInterface {
             if (files != null && files.length > 0) {
                 mArticles.clear();
                 for (String str : files) {
-                        mArticles.add(new Article(str));
+                    mArticles.add(new Article(str));
                 }
 
             }
@@ -139,12 +145,20 @@ public class FragmentArticle extends Fragment implements ActionInterface {
             mTimeStamp = System.currentTimeMillis();
             mySwipeRefreshLayout.setRefreshing(true);
             articleModel = ViewModelProviders.of(this, new MyViewModelFactory(App.getInstance_(), myTab.getUrl())).get(ArticleModel.class);
-            if (mArticles.size() == 0){
-                articleModel.getArticleList().observe(this, articles -> {
+            if (mArticles.size() == 0) {
+                articleModel.getArticleList().observe(getViewLifecycleOwner(), articles -> {
                     mySwipeRefreshLayout.setRefreshing(false);
                     if (articles == null || articles.size() == 0) {
                         errorTextView.setVisibility(View.VISIBLE);
                         return;
+                    }
+                    if (Singleton.Companion.getInstance().getPlayList() == null && articles.get(0).getLink().endsWith("mp3")) {
+                        SharedPreferences prefs = getContext().getSharedPreferences(NOTIF_ALLOW, MODE_PRIVATE);
+                        List<Article> articlesList = (List<Article>) articles;
+                        Singleton.Companion.getInstance().setPlayList(articlesList);
+                        if (prefs.getBoolean(START_ALLOW, false)) {
+                            goListen(articlesList);
+                        }
                     }
                     errorTextView.setVisibility(View.GONE);
                     if (mArticles.size() == 0) {
@@ -152,17 +166,24 @@ public class FragmentArticle extends Fragment implements ActionInterface {
                     } else {
                         for (Article ne : articles) {
                             if (!mArticles.contains(ne))
-                                mArticles.add(ne);
+                                mArticles.add(0,ne);
                         }
                     }
                     adapter.notifyDataSetChanged();
                 });
-            }else {
+            } else {
                 articleModel.refreshData(myTab.getUrl());
             }
 
         }
 
+    }
+
+    private void goListen(List<Article> articles) {
+        if (articles.get(0).getLink().endsWith("mp3")) {
+            articles.get(0).setTitle(App.convertToUTF8(articles.get(0).getTitle()));
+            mListener.playMp(articles);
+        }
     }
 
     @Override
@@ -250,12 +271,13 @@ public class FragmentArticle extends Fragment implements ActionInterface {
         void download(Article article);
 
         void playMp(Article article);
-
+        void playMp(List<Article> articles);
         void mainMore(Article article);
 
         void playLocalMp(Article article);
 
         void removeAddDownloadTab();
+
 
     }
 

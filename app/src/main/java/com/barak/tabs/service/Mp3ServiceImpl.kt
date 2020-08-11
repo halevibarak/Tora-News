@@ -10,19 +10,19 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
+import android.util.Log
+import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import android.util.Log
-import android.widget.RemoteViews
 import com.barak.tabs.Parser.Article
 import com.barak.tabs.R
-import com.barak.tabs.app.App
 import com.barak.tabs.app.AppUtility
 import com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_ERR
 import com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_TAB_ACTION
 import com.barak.tabs.app.Singleton
+import com.barak.tabs.app.Singleton.Companion.getInstance
 import com.barak.tabs.notif.NotificationHelper
 import com.barak.tabs.notif.NotificationHelper.PRIMARY_CHANNEL
 import com.barak.tabs.ui.MainActivity
@@ -30,6 +30,7 @@ import com.barak.tabs.widget.PlayerWidget
 import com.barak.tabs.widget_list.ListWidget
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
@@ -69,7 +70,7 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
                 }
                 mUrl = AppUtility.getMainExternalFolder().absolutePath + "/" + mTitle
                 val art = Article(mTitle!! + " ", mUrl!!, "", null)
-                Singleton.getInstance().LastArticle = art
+                Singleton.getInstance().lastArticle = art
                 Singleton.getInstance().service =this
                 stop4Play()
                 play(mUrl!!, mTitle!!, null)
@@ -87,9 +88,9 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
 
     private fun playPause() {
         if (mPlayer == null) {
-            if (Singleton.getInstance().LastArticle != null) {
+            if (Singleton.getInstance().lastArticle != null) {
                 Singleton.getInstance().service=this
-                play(Singleton.getInstance().LastArticle!!.link, Singleton.getInstance().LastArticle!!.title, null)
+                play(Singleton.getInstance().lastArticle!!.link, Singleton.getInstance().lastArticle!!.title, null)
             }
 
             return
@@ -111,7 +112,7 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
     }
 
     override fun play(url: String, title: String, playerView_: PlayerControlView?) {
-
+        Singleton.getInstance().playList = null
         PlayerWidget.update(applicationContext)
         ListWidget.update(applicationContext)
         if (title != null) mTitle = title
@@ -157,6 +158,58 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
         }
         PlayerWidget.update(applicationContext)
 
+    }
+
+    override fun play(articles: List<Article>, title: String, playerView_: PlayerControlView) {
+        PlayerWidget.update(applicationContext)
+        ListWidget.update(applicationContext)
+        var url = articles.get(0).link
+
+        if (title != null) mTitle = title
+        if (url != null && !mIsPlaying && !mIsPause) {
+            try {
+                mUrl = url.replace(" ", "%20")
+                val dataSourceFactory = DefaultDataSourceFactory(applicationContext, "ExoplayerDemo")
+                val extractorsFactory = DefaultExtractorsFactory()
+                mMainHandler = Handler()
+                val mediaSource = ConcatenatingMediaSource()
+                for (art in articles){
+                    mediaSource.addMediaSource(ExtractorMediaSource(Uri.parse(art.link),
+                            dataSourceFactory,
+                            extractorsFactory,
+                            mMainHandler,
+                            this))
+                }
+                stop4Play()
+                if (mPlayer == null) {
+                    mPlayer = ExoPlayerFactory.newSimpleInstance(applicationContext)
+                }
+
+                mPlayer?.addListener(this)
+                mPlayer?.prepare(mediaSource)
+                mPlayer?.playWhenReady = true
+                mIsPause = false
+                mIsPlaying = true
+                if (mPlayerView == null && playerView_ != null) {
+
+                    mPlayerView = playerView_
+                    mPlayerView?.player = mPlayer
+                    mPlayerView?.show()
+
+
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    showNotificationO(false)
+                } else {
+                    displayNotification(false)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return
+            }
+
+        }
+        PlayerWidget.update(applicationContext)
     }
 
     override fun stop() {
@@ -263,7 +316,7 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
         val resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
         mBuilder.setContentIntent(resultPendingIntent)
         mBuilder.setCustomContentView(views)
-        mBuilder.setVisibility(Notification.VISIBILITY_PUBLIC)
+        mBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         val n = mBuilder.build()
         n.flags = n.flags or (Notification.FLAG_NO_CLEAR or Notification.FLAG_ONGOING_EVENT)
         startForeground(1100, n)
@@ -305,6 +358,24 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
                 mPlayerView = null
 
             }, 400)
+
+        }else if (playbackState == 2) {
+            var selected: Int = 0
+            mPlayer?.let {
+                selected =  it.currentWindowIndex
+                getInstance().playList?.let {
+                    if (it.size > selected){
+                        mTitle = it[selected].title
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            showNotificationO(false)
+                        } else {
+                            displayNotification(false)
+                        }
+                    }
+                }
+            }
+
+
 
         }
 

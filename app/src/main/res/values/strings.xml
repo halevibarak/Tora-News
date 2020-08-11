@@ -2,7 +2,7 @@
     <string name="app_name">תורה ניוז</string>
     <string name="app_name_d">תורה ניוז הורדות</string>
     <string name="action_settings">ניהול טאבים</string>
-    <string name="action_man_title">כאן ניתן להחליט אילו טאבים להציג </string>
+    <string name="action_man_title">אילו טאבים להציג </string>
 
 
     <string name="main_url">http://www.meirtv.co.il/site/rss/archive_mp3.asp</string>
@@ -35,6 +35,7 @@
     <string name="start_title">Jew RSS</string>
 
     <string name="return_all">התראה כל יום חול בחמש בערב</string>
+    <string name="start_self">פתיחת האפליקצייה ונגן בחיבור לבלוטוס</string>
     <string name="main_7_m">http://www.inn.co.il/Rss.aspx</string>
     <string name="no_record">תקלה - בדוק את חיבור האינטרנט</string>
     <string name="notif_text_toch">יש להקיש כדי לשמוע</string>

@@ -24,7 +24,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -60,6 +59,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -73,6 +73,7 @@ import static com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_TAB;
 import static com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_TAB_ACTION;
 import static com.barak.tabs.manage.ManageActivity.NOTIF_HOUR;
 import static com.barak.tabs.manage.ManageActivity.NOTIF_MINUT;
+import static com.barak.tabs.notif.BroadcastService.FROM_BLE;
 import static com.barak.tabs.ui.ArticleModel.NOTIF_ALLOW;
 
 
@@ -80,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
     private static final int PERMISSION_REQUEST_CODE = 45454;
     public static final String MESSAGE_PROGRESS = "message_progress";
     private static final String PREFERENCE = "PREFERENCE";
+    public static final String BLE_ALLOW = "BLE_ALLOW";
     private Mp3Service mMP3Service;
 
     TabLayout tabLayout;
@@ -100,13 +102,13 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+//            getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+//        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
         progressBar = findViewById(R.id.progressbar);
         playerView = findViewById(R.id.player);
         AppRater.INSTANCE.app_launched(this);
@@ -132,8 +134,9 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         if (!ConnectivityHelper.isConnectedToNetwork(getApplicationContext())) {
             viewPager.setCurrentItem(App.getVisTabs().size() - 1);
             Snackbar.make(progressBar, getString(R.string.no_record), Snackbar.LENGTH_LONG).show();
-
         }
+
+
     }
 
 
@@ -252,6 +255,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
     }
 
     public void playMp(Article article) {
+        Singleton.Companion.getInstance().setPlayList(null);
         Singleton.Companion.getInstance().setLastArticle(article);
         registerReceiver();
         if (Singleton.Companion.getInstance().getService() != null) {
@@ -271,6 +275,33 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
             mArticle = null;
             if (article.getLink() != null) {
                 mMP3Service.play(article.getLink(), article.getTitle(), playerView);
+            }
+        }
+    }
+
+    public void playMp(List<Article> articles) {
+        if (!getIntent().getBooleanExtra(FROM_BLE,false)){
+            return;
+        }
+        Singleton.Companion.getInstance().setLastArticle(articles.get(0));
+        registerReceiver();
+        if (Singleton.Companion.getInstance().getService() != null) {
+            mMP3Service = Singleton.Companion.getInstance().getService();
+        }
+        if (mMP3Service != null && mMP3Service.isPlayOrPause()) {
+            mMP3Service.stop4Play();
+            mMP3Service.play(articles, articles.get(0).getTitle(), playerView);
+            return;
+        }
+        Intent it = new Intent(this, Mp3ServiceImpl.class);
+        startService(it);
+        bindService(it, mConnection, 0);
+        if (mMP3Service == null) {
+            mArticle = articles.get(0);
+        } else {
+            mArticle = null;
+            if (articles.get(0).getLink() != null) {
+                mMP3Service.play(articles.get(0).getLink(), articles.get(0).getTitle(), playerView);
             }
         }
     }
@@ -351,12 +382,18 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
                 }
             }
             int minut = article.getDescription().indexOf("(");
-            String timeStr = " " + article.getDescription().substring(minut);
-            AppUtility.downLoadSongToexternalStorage(this, article.getLink(), newtitle + timeStr);
+            if (minut == -1) {
+                AppUtility.downLoadSongToexternalStorage(this, article.getLink(), article.getTitle());
+            } else {
+                String timeStr = " " + article.getDescription().substring(minut);
+                AppUtility.downLoadSongToexternalStorage(this, article.getLink(), newtitle + timeStr);
+            }
+
         } else {
             mArticle = article;
             requestPermission();
         }
+
     }
 
 
@@ -451,6 +488,11 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
             mMP3Service.bindPlayerView(playerView);
             if (mArticle != null && !mMP3Service.isPlayingNow()) {
                 mMP3Service.stop();
+                if (Singleton.Companion.getInstance().getPlayList() != null) {
+                    mMP3Service.play(Singleton.Companion.getInstance().getPlayList(), mArticle.getTitle(), playerView);
+                } else {
+                    mMP3Service.play(mArticle.getLink(), mArticle.getTitle(), playerView);
+                }
                 mMP3Service.play(mArticle.getLink(), mArticle.getTitle(), playerView);
             }
             mBound = true;
@@ -461,12 +503,27 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
             mMP3Service = null;
             Singleton.Companion.getInstance().setService(null);
             if (playerView != null) {
-                playerView.hide();
-                playerView.setPlayer(null);
+                if (!playNext()) {
+                    playerView.hide();
+                    playerView.setPlayer(null);
+                }
+
             }
             mBound = false;
         }
     };
+
+    private boolean playNext() {
+//        if (Singleton.Companion.getInstance().getPlayList() != null &&
+//                Singleton.Companion.getInstance().getPlayList().size() > 0) {
+//
+//            playMp(Singleton.Companion.getInstance().getPlayList());
+//            Singleton.Companion.getInstance().setPlayList(Singleton.Companion.getInstance().getPlayList().subList(1,
+//                    Singleton.Companion.getInstance().getPlayList().size() - 1));
+//            return true;
+//        }
+        return false;
+    }
 
     @Override
     protected void onStart() {
@@ -582,5 +639,6 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
             return super.dispatchKeyEvent(event);
         }
     }
+
 
 }

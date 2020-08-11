@@ -16,21 +16,24 @@ import com.barak.tabs.R;
 import com.barak.tabs.app.App;
 import com.barak.tabs.model.MyTab;
 import com.barak.tabs.notif.AlarmUtils;
+import com.barak.tabs.notif.BroadcastService;
 import com.barak.tabs.notif.MyBroadcastReceiver;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
 import static com.barak.tabs.ui.ArticleModel.NOTIF_ALLOW;
+import static com.barak.tabs.ui.ArticleModel.START_ALLOW;
 
 public class ManageActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private ArrayList<MyTab> mPages;
     private TabManageAdapter articleAdapter;
-    private CheckBox chkIos;
+    private CheckBox chkIos,chkStart;
     public static final int NOTIF_HOUR = 17;
     public static final int NOTIF_MINUT = 0;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,7 @@ public class ManageActivity extends AppCompatActivity {
             findViewById(R.id.first).setVisibility(View.VISIBLE);
         }
         chkIos = findViewById(R.id.button);
+        chkStart = findViewById(R.id.button_2);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mRecyclerView.getContext()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setHasFixedSize(true);
@@ -50,17 +54,17 @@ public class ManageActivity extends AppCompatActivity {
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
         articleAdapter = new TabManageAdapter(mPages);
         mRecyclerView.setAdapter(articleAdapter);
-        SharedPreferences prefs = getSharedPreferences(NOTIF_ALLOW, MODE_PRIVATE);
+        prefs = getSharedPreferences(NOTIF_ALLOW, MODE_PRIVATE);
         boolean allow = prefs.getBoolean(NOTIF_ALLOW, false);
+        boolean allowStart = prefs.getBoolean(START_ALLOW, false);
         if (allow) {
             startAlert();
-
             chkIos.setChecked(true);
         } else {
             chkIos.setChecked(false);
         }
         chkIos.setOnClickListener(v -> {
-            SharedPreferences.Editor editor = getSharedPreferences(NOTIF_ALLOW, MODE_PRIVATE).edit();
+            SharedPreferences.Editor editor = prefs.edit();
             if (((CheckBox) v).isChecked()) {
                 editor.putBoolean(NOTIF_ALLOW, true);
                 startAlert();
@@ -70,8 +74,27 @@ public class ManageActivity extends AppCompatActivity {
                 AlarmUtils.cancelAllAlarms(this, intent);
             }
             editor.apply();
-
         });
+
+        if (allowStart) {
+            chkStart.setChecked(true);
+        } else {
+            chkStart.setChecked(false);
+        }
+        chkStart.setOnClickListener(v -> {
+            SharedPreferences.Editor editor = prefs.edit();
+            if (((CheckBox) v).isChecked()) {
+                editor.putBoolean(START_ALLOW, true);
+                Intent intent_ = new Intent(ManageActivity.this, BroadcastService.class);
+                startService(intent_);
+            } else {
+                editor.putBoolean(START_ALLOW, false);
+            }
+            editor.apply();
+        });
+
+
+
     }
     private void startAlert() {
         Intent intent = new Intent(this, MyBroadcastReceiver.class);

@@ -84,5 +84,6 @@ class ArticleModel(application: Application, mParam: String) : AndroidViewModel(
 
     companion object {
         @JvmField val NOTIF_ALLOW = "NOTIF_ALLOW"
+        @JvmField val START_ALLOW = "START_ALLOW"
     }
 }

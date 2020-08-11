@@ -9,21 +9,21 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <application
         android:name=".app.App"
         android:allowBackup="true"
         android:icon="@drawable/ic"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
+        android:theme="@style/Theme.AppCompat"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -32,18 +32,31 @@
         </activity>
 
         <receiver android:name=".notif.MyBroadcastReceiver" />
-
+        <service android:enabled="true" android:name=".notif.BroadcastService" />
         <activity android:name=".ui.WebActivity" />
         <activity
             android:name=".manage.ManageActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/action_man_title"
+             />
 
         <service android:name=".app.DownloadToExtStrService" />
         <service
             android:name=".service.Mp3ServiceImpl"
             android:enabled="true"
             android:exported="true" />
-
+        <receiver android:enabled="true" android:name=".notif.BroadcastService">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".notif.BootComplete"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
         <!--PlayerWidget-->
         <receiver android:name=".widget.PlayerWidget">
             <intent-filter>

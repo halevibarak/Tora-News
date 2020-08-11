@@ -59,11 +59,11 @@ applicationContext
             }
             views.setOnClickPendingIntent(R.id.butPlay, pitPlay)
         } else {
-            if (Singleton.getInstance().LastArticle == null) {
+            if (Singleton.getInstance().lastArticle == null) {
                 views.setTextViewText(R.id.txtvTitle,
                         this.getString(R.string.app_name))
             } else {
-                views.setTextViewText(R.id.txtvTitle, Singleton.getInstance().LastArticle!!.title)
+                views.setTextViewText(R.id.txtvTitle, Singleton.getInstance().lastArticle!!.title)
             }
             views.setOnClickPendingIntent(R.id.layout_left, pitMain)
             views.setOnClickPendingIntent(R.id.butPlay, pitPlay)
