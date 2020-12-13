@@ -2,6 +2,7 @@ package com.barak.tabs.ui
 
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -9,6 +10,7 @@ import android.util.DisplayMetrics
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import com.barak.tabs.R
 
 /**
@@ -52,61 +54,37 @@ object AppRater {
     }
 
     fun showRateDialog(mContext: Context, editor: SharedPreferences.Editor?) {
-
-        val dialog = Dialog(mContext)
-        val ll = LinearLayout(mContext)
-        ll.orientation = LinearLayout.VERTICAL
-
-        val tv = TextView(mContext)
-        tv.text = mContext.resources.getString(R.string.please_rate)
-        tv.width = convertDpToPixel(260f, mContext).toInt()
-        tv.setLines(3)
-        tv.setPadding(50, 50, 50, 50)
-        ll.addView(tv)
-
-        val b1 = Button(mContext)
-        b1.text = mContext.resources.getString(R.string.please_rate_b1)
-        b1.setBackgroundResource(R.drawable.button)
-        b1.setPadding(50, 50, 50, 50)
-        b1.setTextColor(mContext.resources.getColor(R.color.white))
-
-        b1.setOnClickListener { v ->
-            if (editor != null) {
-                editor.putBoolean(DONT_SHOW_AGAIN, true)
-                editor.apply()
-            }
-            mContext.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$APP_PACKAGE")))
-            dialog.dismiss()
-        }
-        ll.addView(b1)
-
-        val b2 = Button(mContext)
-        b2.setPadding(50, 50, 50, 50)
-        b2.setBackgroundResource(R.drawable.button)
-        b2.setTextColor(mContext.resources.getColor(R.color.white))
-
-        b2.text = mContext.resources.getString(R.string.please_rate_b2)
-        b2.setOnClickListener { v -> dialog.dismiss() }
-        ll.addView(b2)
-
-        val b3 = Button(mContext)
-        b3.text = mContext.resources.getString(R.string.please_rate_b3)
-        b3.setTextColor(mContext.resources.getColor(R.color.white))
-        b3.setPadding(50, 50, 50, 50)
-        b3.setBackgroundResource(R.drawable.button)
-
-        b3.setOnClickListener { v ->
-            if (editor != null) {
-                editor.putBoolean(DONT_SHOW_AGAIN, true)
-                editor.apply()
-            }
-            dialog.dismiss()
-        }
-        ll.addView(b3)
-
-        dialog.setContentView(ll)
-        dialog.show()
+        val builder: AlertDialog.Builder = AlertDialog.Builder(mContext)
+        builder.setMessage(mContext.resources.getString(R.string.please_rate))
+                .setCancelable(false)
+                .setPositiveButton(mContext.resources.getString(R.string.please_rate_b1)) { dialog, _ -> rate1(dialog,mContext, editor) }
+                .setNegativeButton(mContext.resources.getString(R.string.please_rate_b2)) { dialog, _ -> dialog.dismiss() }
+                .setNeutralButton(mContext.resources.getString(R.string.please_rate_b3)) { dialog, _ -> dontRate(dialog,mContext, editor) }
+        builder.create().show()
     }
+
+    private fun dontRate(dialog: DialogInterface?, mContext: Context, editor: SharedPreferences.Editor?) {
+        if (editor != null) {
+            editor.putBoolean(DONT_SHOW_AGAIN, true)
+            editor.apply()
+        }
+        dialog?.dismiss()
+    }
+
+    private fun rate1(dialog: DialogInterface?, mContext: Context, editor: SharedPreferences.Editor?) {
+        if (editor != null) {
+            editor.putBoolean(DONT_SHOW_AGAIN, true)
+            editor.apply()
+        }
+        try {
+            mContext.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$APP_PACKAGE")))
+        } catch (e: Exception) {
+        }
+        dialog?.dismiss()
+
+    }
+
+
 
     fun convertDpToPixel(dp: Float, context: Context): Float {
         val resources = context.resources

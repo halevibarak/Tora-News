@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -190,7 +189,8 @@ public class FragmentArticle extends Fragment implements ActionInterface {
     public void goListen(Article article) {
         if (article.getLink().endsWith("mp3")) {
             article.setTitle(App.convertToUTF8(article.getTitle()));
-            mListener.playMp(article);
+            int index = mArticles.indexOf(article);
+            mListener.playMp(mArticles,index);
         }
     }
 
@@ -213,11 +213,13 @@ public class FragmentArticle extends Fragment implements ActionInterface {
 
     @Override
     public void goBrowser(Article article) {
-        String url = article.getLink();
-        if (!url.startsWith("http://") && !url.startsWith("https://"))
-            url = "http://" + url;
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        startActivity(browserIntent);
+//        String url = article.getLink();
+//        if (!url.startsWith("http://") && !url.startsWith("https://"))
+//            url = "http://" + url;
+//        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+//        try {
+//            startActivity(browserIntent);
+//        } catch ( Exception e) { }
     }
 
     @Override
@@ -270,7 +272,7 @@ public class FragmentArticle extends Fragment implements ActionInterface {
 
         void download(Article article);
 
-        void playMp(Article article);
+        void playMp(List<Article> articles,int index);
         void playMp(List<Article> articles);
         void mainMore(Article article);
 

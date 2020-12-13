@@ -73,7 +73,7 @@ import static com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_TAB;
 import static com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_TAB_ACTION;
 import static com.barak.tabs.manage.ManageActivity.NOTIF_HOUR;
 import static com.barak.tabs.manage.ManageActivity.NOTIF_MINUT;
-import static com.barak.tabs.notif.BroadcastService.FROM_BLE;
+import static com.barak.tabs.notif.BootComplete.BroadcastService.FROM_BLE;
 import static com.barak.tabs.ui.ArticleModel.NOTIF_ALLOW;
 
 
@@ -102,13 +102,8 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-//            getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-//        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
         progressBar = findViewById(R.id.progressbar);
         playerView = findViewById(R.id.player);
         AppRater.INSTANCE.app_launched(this);
@@ -135,7 +130,6 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
             viewPager.setCurrentItem(App.getVisTabs().size() - 1);
             Snackbar.make(progressBar, getString(R.string.no_record), Snackbar.LENGTH_LONG).show();
         }
-
 
     }
 
@@ -280,7 +274,8 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
     }
 
     public void playMp(List<Article> articles) {
-        if (!getIntent().getBooleanExtra(FROM_BLE,false)){
+        if (!getIntent().getBooleanExtra(
+                FROM_BLE,false)){
             return;
         }
         Singleton.Companion.getInstance().setLastArticle(articles.get(0));
@@ -394,6 +389,36 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
             requestPermission();
         }
 
+    }
+
+    @Override
+    public void playMp(List<Article> articles, int index) {
+        if (index<0) return;
+        if (!getIntent().getBooleanExtra(FROM_BLE,true)){
+            return;
+        }
+        Singleton.Companion.getInstance().setPlayList(articles);
+        Singleton.Companion.getInstance().setLastArticle(articles.get(index));
+        registerReceiver();
+        if (Singleton.Companion.getInstance().getService() != null) {
+            mMP3Service = Singleton.Companion.getInstance().getService();
+        }
+        if (mMP3Service != null && mMP3Service.isPlayOrPause()) {
+            mMP3Service.stop4Play();
+            mMP3Service.play(articles, articles.get(index).getTitle(), playerView);
+            return;
+        }
+        Intent it = new Intent(this, Mp3ServiceImpl.class);
+        startService(it);
+        bindService(it, mConnection, 0);
+        if (mMP3Service == null) {
+            mArticle = articles.get(index);
+        } else {
+            mArticle = null;
+            if (articles.get(index).getLink() != null) {
+                mMP3Service.play(articles.get(index).getLink(), articles.get(index).getTitle(), playerView);
+            }
+        }
     }
 
 

@@ -1,7 +1,5 @@
 package com.barak.tabs.adapter;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.SystemClock;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -86,12 +84,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         lessonViewHolder.moreButton.setText(lessonViewHolder.moreButton.getContext().getString(R.string.donate));
                         lessonViewHolder.moreButton.setVisibility(View.VISIBLE);
                         lessonViewHolder.playView.setVisibility(View.GONE);
-                        lessonViewHolder.moreButton.setOnClickListener(v -> {
-                            String url = "http://www.meirtv.co.il/Donate/Home/Donate?source=mobile3";
-                            Intent i = new Intent(Intent.ACTION_VIEW);
-                            i.setData(Uri.parse(url));
-                            v.getContext().startActivity(i);
-                        });
+                        lessonViewHolder.moreButton.setVisibility(View.GONE);
+//                        lessonViewHolder.moreButton.setOnClickListener(v -> {
+//                            String url = "http://www.meirtv.co.il/Donate/Home/Donate?source=mobile3";
+//                            Intent i = new Intent(Intent.ACTION_VIEW);
+//                            i.setData(Uri.parse(url));
+//                            try {
+//                                v.getContext().startActivity(i);
+//                            } catch ( Exception e) { }
+//
+//
+//                        });
 
                     } else {
                         lessonViewHolder.moreButton.setOnClickListener(v -> {

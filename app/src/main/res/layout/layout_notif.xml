@@ -53,6 +53,17 @@
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/play_n"
+            style="Custom Notification Title"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="7dp"
+            android:layout_marginRight="-8dp"
+            android:gravity="center"
+            android:src="@drawable/arrow_double_right"
+            />
+
+        <ImageView
             android:id="@+id/play_v"
             style="Custom Notification Title"
             android:layout_width="50dp"

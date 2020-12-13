@@ -37,6 +37,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.ui.PlayerControlView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.RepeatModeUtil
+import com.google.firebase.crashlytics.internal.model.CrashlyticsReport
 import java.io.IOException
 
 class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMediaSource.EventListener {
@@ -78,12 +79,18 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
             }
             if (ACAO_PLAY == intent.getStringExtra(EXTRA_ACAO)) {
                 playPause()
+            }else if (ACAO_NEXT == intent.getStringExtra(EXTRA_ACAO)) {
+                exoNext()
             } else if (ACAO_STOP == intent.getStringExtra(EXTRA_ACAO)) {
                 stop()
             }
 
         }
         return START_NOT_STICKY
+    }
+
+    private fun exoNext() {
+        mPlayer?.next()
     }
 
     private fun playPause() {
@@ -142,8 +149,6 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
                     mPlayerView = playerView_
                     mPlayerView?.player = mPlayer
                     mPlayerView?.show()
-
-
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     showNotificationO(false)
@@ -257,16 +262,20 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
 
         val itStop = Intent(this, Mp3ServiceImpl::class.java)
         itStop.putExtra(EXTRA_ACAO, ACAO_STOP)
+        val itNext = Intent(this, Mp3ServiceImpl::class.java)
+        itNext.putExtra(EXTRA_ACAO, ACAO_NEXT)
         val stackBuilder = TaskStackBuilder.create(this)
         stackBuilder.addParentStack(MainActivity::class.java)
         stackBuilder.addNextIntent(Intent(this, MainActivity::class.java))
         val pitPlayPause = PendingIntent.getService(this, 1, itPlayPause, 0)
         val pitStop = PendingIntent.getService(this, 3, itStop, 0)
+        val pitNext = PendingIntent.getService(this, 2, itNext, 0)
 
         val views = RemoteViews(packageName, R.layout.layout_notif)
         views.setOnClickPendingIntent(R.id.play_v, pitPlayPause)
         views.setImageViewResource(R.id.play_v, if (showPlay) R.drawable.play_g else R.drawable.pause_g)
         views.setOnClickPendingIntent(R.id.stop_v, pitStop)
+        views.setOnClickPendingIntent(R.id.play_n, pitNext)
         views.setTextViewText(R.id.text_v, mTitle)
         val noti = NotificationHelper(applicationContext)
 
@@ -305,12 +314,15 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
         itPlayPause.putExtra(EXTRA_ACAO, ACAO_PLAY)
         val itStop = Intent(this, Mp3ServiceImpl::class.java)
         itStop.putExtra(EXTRA_ACAO, ACAO_STOP)
+        val itNext = Intent(this, Mp3ServiceImpl::class.java)
+        itNext.putExtra(EXTRA_ACAO, ACAO_NEXT)
         val pitPlayPausa = PendingIntent.getService(this, 1, itPlayPause, 0)
         val pitStop = PendingIntent.getService(this, 3, itStop, 0)
+        val pitNext = PendingIntent.getService(this, 2, itNext, 0)
         val views = RemoteViews(packageName, R.layout.layout_notif)
         views.setOnClickPendingIntent(R.id.play_v, pitPlayPausa)
         views.setImageViewResource(R.id.play_v, if (showPlay) R.drawable.play_g else R.drawable.pause_g)
-
+        views.setOnClickPendingIntent(R.id.play_n, pitNext)
         views.setOnClickPendingIntent(R.id.stop_v, pitStop)
         views.setTextViewText(R.id.text_v, mTitle)
         val resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
@@ -339,6 +351,19 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
 
     override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
 
+        mPlayer?.let {
+            var selected = it.currentWindowIndex;
+            getInstance().playList?.let {
+                if (it.size > selected){
+                    mTitle = it[selected].title
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        showNotificationO(false)
+                    } else {
+                        displayNotification(false)
+                    }
+                }
+            }
+        }
     }
 
     override fun onLoadingChanged(isLoading: Boolean) {
@@ -425,6 +450,8 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
     companion object {
         @JvmField
         val EXTRA_ACAO = "acao"
+        @JvmField
+        val ACAO_NEXT = "next"
         @JvmField
         val ACAO_PLAY = "play_pause"
         @JvmField

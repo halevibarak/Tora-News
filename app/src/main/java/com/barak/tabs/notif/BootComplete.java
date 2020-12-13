@@ -12,14 +12,65 @@
  */
 package com.barak.tabs.notif;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.util.Log;
+
+import com.barak.tabs.app.Singleton;
+import com.barak.tabs.ui.MainActivity;
+
+import static android.content.Context.MODE_PRIVATE;
+import static com.barak.tabs.ui.ArticleModel.NOTIF_ALLOW;
 
 public class BootComplete extends BroadcastReceiver {
 
+    BroadcastService mSMSreceiver = new BroadcastService();
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        BroadcastService.checkStartVpnOnBoot(context);
+        Log.d("barakk", "BootComplete");
+        SharedPreferences prefs = context.getSharedPreferences(NOTIF_ALLOW, MODE_PRIVATE);
+        boolean allow = prefs.getBoolean(NOTIF_ALLOW, false);
+        if (allow){
+            mSMSreceiver = new BroadcastService();
+            checkStartVpnOnBoot(context,mSMSreceiver);
+        }
+
+    }
+
+    public static void checkStartVpnOnBoot(Context context, BroadcastService mSMSreceiver) {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        context.getApplicationContext().registerReceiver(mSMSreceiver, filter);
+    }
+
+    public static class BroadcastService extends BroadcastReceiver {
+
+        public static final String FROM_BLE = "from_ble";
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
+                SharedPreferences prefs = context.getSharedPreferences(NOTIF_ALLOW, MODE_PRIVATE);
+                boolean allow = prefs.getBoolean(NOTIF_ALLOW, false);
+                if (allow){
+                    Intent i = new Intent(context, MainActivity.class);
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    i.putExtra(FROM_BLE, true);
+                    context.startActivity(i);
+                }
+            } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
+                if (Singleton.Companion.getInstance().getService() != null) {
+                    Singleton.Companion.getInstance().getService().stop();
+                }
+            }
+        }
     }
 }

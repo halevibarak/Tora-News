@@ -16,7 +16,7 @@ import com.barak.tabs.R;
 import com.barak.tabs.app.App;
 import com.barak.tabs.model.MyTab;
 import com.barak.tabs.notif.AlarmUtils;
-import com.barak.tabs.notif.BroadcastService;
+import com.barak.tabs.notif.BootComplete;
 import com.barak.tabs.notif.MyBroadcastReceiver;
 
 import java.util.ArrayList;
@@ -85,7 +85,7 @@ public class ManageActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = prefs.edit();
             if (((CheckBox) v).isChecked()) {
                 editor.putBoolean(START_ALLOW, true);
-                Intent intent_ = new Intent(ManageActivity.this, BroadcastService.class);
+                Intent intent_ = new Intent(ManageActivity.this, BootComplete.BroadcastService.class);
                 startService(intent_);
             } else {
                 editor.putBoolean(START_ALLOW, false);
