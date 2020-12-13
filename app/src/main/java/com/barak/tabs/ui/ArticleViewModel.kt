@@ -1,23 +1,25 @@
 package com.barak.tabs.ui
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import android.content.Context
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.barak.tabs.Parser.Article
 import com.barak.tabs.Parser.XMLParser
 import com.barak.tabs.app.VolleySingleton
+import com.barak.tabs.repository.RssRepository
+import kotlinx.coroutines.launch
 import java.util.*
 
 /**
  * Created by Barak on 1/10/2018.
  */
 
-class ArticleModel(application: Application, mParam: String) : AndroidViewModel(application) {
+class ArticleViewModel() :  ViewModel() {
 
+    private var rssRepository: RssRepository = RssRepository()
     var articleList: JsonLiveData
     private var xmlParser: XMLParser? = null
     private var mTmeStamp: Long = 0
@@ -26,25 +28,24 @@ class ArticleModel(application: Application, mParam: String) : AndroidViewModel(
 
 
     init {
-        articleList = JsonLiveData(this.getApplication(), mParam)
+        articleList = JsonLiveData( "")
     }
 
-    fun refreshData(mParam: String) {
-        if (System.currentTimeMillis() > mTmeStamp + 5000) {
-            articleList.LoadData(this.getApplication(), mParam)
+    fun fetchDetails(url: String) {
+        viewModelScope.launch {
+            articleList.LoadData(url)
+            rssRepository.fetchResponse(url)
         }
-    }
-    fun refreshData_(mParam: String) {
-        refresh.value = 0
-        articleList = JsonLiveData(this.getApplication(), mParam)
+
     }
 
-    inner class JsonLiveData(context: Context, mParam: String) : MutableLiveData<List<Article>>(), Observer {
+
+    inner class JsonLiveData(mParam: String) : MutableLiveData<List<Article>>(), Observer {
         private val mArticles = ArrayList<Article>()
 
 
         init {
-            LoadData(context, mParam)
+            LoadData(mParam)
         }
 
         override fun update(o: Observable, data: Any) {
@@ -57,14 +58,13 @@ class ArticleModel(application: Application, mParam: String) : AndroidViewModel(
 
         }
 
-        fun LoadData(context: Context, mParam: String) {
+        fun LoadData( mParam: String) {
             val stringRequest = StringRequest(Request.Method.POST, mParam,
                     { response ->
                         xmlParser = XMLParser(mParam.contains("meir"))
                         xmlParser!!.addObserver(this@JsonLiveData)
                         try {
                             xmlParser!!.parseXML(response)
-
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -76,7 +76,7 @@ class ArticleModel(application: Application, mParam: String) : AndroidViewModel(
                     3000,
                     DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                     DefaultRetryPolicy.DEFAULT_BACKOFF_MULT)
-            VolleySingleton.getInstance(context).addToRequestQueue(stringRequest)
+            VolleySingleton.getInstance().addToRequestQueue(stringRequest)
 
 
         }

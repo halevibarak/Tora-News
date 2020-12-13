@@ -7,7 +7,7 @@ import android.content.SharedPreferences;
 import android.widget.Toast;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.barak.tabs.ui.ArticleModel.NOTIF_ALLOW;
+import static com.barak.tabs.ui.ArticleViewModel.NOTIF_ALLOW;
 
 /**
  * Created by Barak Halevi on 11/08/2020.

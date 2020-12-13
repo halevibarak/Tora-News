@@ -74,7 +74,7 @@ import static com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_TAB_ACTION;
 import static com.barak.tabs.manage.ManageActivity.NOTIF_HOUR;
 import static com.barak.tabs.manage.ManageActivity.NOTIF_MINUT;
 import static com.barak.tabs.notif.BroadcastService.FROM_BLE;
-import static com.barak.tabs.ui.ArticleModel.NOTIF_ALLOW;
+import static com.barak.tabs.ui.ArticleViewModel.NOTIF_ALLOW;
 
 
 public class MainActivity extends AppCompatActivity implements FragmentArticle.OnCompleteListener, Observer {
@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
                     }
                 }, error -> {
         });
-        VolleySingleton.Companion.getInstance(this).addToRequestQueue(stringRequest);
+        VolleySingleton.Companion.getInstance().addToRequestQueue(stringRequest);
     }
 
 

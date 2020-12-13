@@ -22,8 +22,8 @@ import com.barak.tabs.notif.MyBroadcastReceiver;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import static com.barak.tabs.ui.ArticleModel.NOTIF_ALLOW;
-import static com.barak.tabs.ui.ArticleModel.START_ALLOW;
+import static com.barak.tabs.ui.ArticleViewModel.NOTIF_ALLOW;
+import static com.barak.tabs.ui.ArticleViewModel.START_ALLOW;
 
 public class ManageActivity extends AppCompatActivity {
 

@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Tora.iml" filepath="$PROJECT_DIR$/.idea/Tora.iml" group="Tora" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Tora-News.iml" filepath="$PROJECT_DIR$/.idea/modules/Tora-News.iml" group="Tora-News" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Tora-News-app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Tora-News-app.iml" group="Tora-News/app" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="Tora/app" />
     </modules>
   </component>
