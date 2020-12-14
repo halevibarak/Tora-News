@@ -10,10 +10,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.barak.tabs.Parser.Article;
 import com.barak.tabs.R;
 import com.barak.tabs.app.App;
 import com.barak.tabs.model.MyTab;
+import com.barak.tabs.models.Item;
 import com.barak.tabs.ui.ActionInterface;
 
 import java.util.ArrayList;
@@ -26,12 +26,12 @@ import java.util.List;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final MyTab.TabType tabType;
-    List<Article> articles = new ArrayList<>();
+    List<Item> articles = new ArrayList<>();
     private boolean mShowMore;
     private ActionInterface mLisenner;
     private long mLastClickTime;
 
-    public RecyclerViewAdapter(ArrayList<Article> items, boolean showMore, ActionInterface listnner, MyTab.TabType tabType_) {
+    public RecyclerViewAdapter(ArrayList<Item> items, boolean showMore, ActionInterface listnner, MyTab.TabType tabType_) {
         this.articles = items;
         this.mLisenner = listnner;
         this.tabType = tabType_;
@@ -65,7 +65,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder view_holder, int position) {
 
-        final Article article = articles.get(position);
+        final Item article = articles.get(position);
         switch (view_holder.getItemViewType()) {
             case 0:
                 LessonViewHolder lessonViewHolder = (LessonViewHolder) view_holder;

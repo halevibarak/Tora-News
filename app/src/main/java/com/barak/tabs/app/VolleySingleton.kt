@@ -8,13 +8,13 @@ import com.android.volley.toolbox.Volley
 /**
  * Created by Barak Halevi on 2020-03-24.
  */
-class VolleySingleton constructor(context: Context) {
+class VolleySingleton {
     companion object {
         @Volatile
         private var INSTANCE: VolleySingleton? = null
-        fun getInstance(context: Context) =
+        fun getInstance() =
                 INSTANCE ?: synchronized(this) {
-                    INSTANCE ?: VolleySingleton(context).also {
+                    INSTANCE ?: VolleySingleton().also {
                         INSTANCE = it
                     }
                 }
@@ -22,9 +22,7 @@ class VolleySingleton constructor(context: Context) {
 
 
     val requestQueue: RequestQueue by lazy {
-        // applicationContext is key, it keeps you from leaking the
-        // Activity or BroadcastReceiver if someone passes one in.
-        Volley.newRequestQueue(context.applicationContext)
+        Volley.newRequestQueue(App.getInstance_())
     }
 
     fun <T> addToRequestQueue(req: Request<T>) {

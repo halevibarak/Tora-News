@@ -24,7 +24,7 @@ import com.barak.tabs.app.Singleton;
 import com.barak.tabs.ui.MainActivity;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.barak.tabs.ui.ArticleModel.NOTIF_ALLOW;
+import static com.barak.tabs.ui.ArticleViewModel.NOTIF_ALLOW;
 
 public class BootComplete extends BroadcastReceiver {
 

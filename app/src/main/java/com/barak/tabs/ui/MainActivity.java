@@ -42,6 +42,7 @@ import com.barak.tabs.app.VolleySingleton;
 import com.barak.tabs.manage.ManageActivity;
 import com.barak.tabs.model.ChangeLogDialog;
 import com.barak.tabs.model.MyTab;
+import com.barak.tabs.models.Item;
 import com.barak.tabs.network.ConnectivityHelper;
 import com.barak.tabs.network.DownloadExecelDataSource;
 import com.barak.tabs.notif.AlarmUtils;
@@ -74,7 +75,7 @@ import static com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_TAB_ACTION;
 import static com.barak.tabs.manage.ManageActivity.NOTIF_HOUR;
 import static com.barak.tabs.manage.ManageActivity.NOTIF_MINUT;
 import static com.barak.tabs.notif.BootComplete.BroadcastService.FROM_BLE;
-import static com.barak.tabs.ui.ArticleModel.NOTIF_ALLOW;
+import static com.barak.tabs.ui.ArticleViewModel.NOTIF_ALLOW;
 
 
 public class MainActivity extends AppCompatActivity implements FragmentArticle.OnCompleteListener, Observer {
@@ -87,12 +88,12 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
     TabLayout tabLayout;
     ViewPager viewPager;
     ViewPagerAdapter viewPagerAdapter;
-    private Article mRabbiPost;
+    private Item mRabbiPost;
     private static final String URL_JSON = "http://www.meirtv.co.il/site/rss/archive.asp";
 
     private CompositeDisposable _disposables = new CompositeDisposable();
     private ProgressBar progressBar;
-    private Article mArticle;
+    private Item mArticle;
     public PlayerControlView playerView;
     private boolean mBound = false;
     private ChangeLogDialog myNewDialog;
@@ -130,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
             viewPager.setCurrentItem(App.getVisTabs().size() - 1);
             Snackbar.make(progressBar, getString(R.string.no_record), Snackbar.LENGTH_LONG).show();
         }
+
 
     }
 
@@ -180,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
     }
 
     //build new rss feed url from other rss feed
-    public void mainMore(Article article) {
+    public void mainMore(Item article) {
         progressBar.setVisibility(View.VISIBLE);
         mRabbiPost = article;
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_JSON,
@@ -194,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
                     }
                 }, error -> {
         });
-        VolleySingleton.Companion.getInstance(this).addToRequestQueue(stringRequest);
+        VolleySingleton.Companion.getInstance().addToRequestQueue(stringRequest);
     }
 
 
@@ -236,8 +238,8 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
     }
 
     @Override
-    public void playLocalMp(Article article) {
-        Article art = new Article(article.getTitle() + " ", AppUtility.getMainExternalFolder().getAbsolutePath() + "/" + article.getTitle(), "", null);
+    public void playLocalMp(Item article) {
+        Item art = new Item(article.getTitle() + " ", AppUtility.getMainExternalFolder().getAbsolutePath() + "/" + article.getTitle());
         playMp(art);
     }
 
@@ -248,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         ListWidget.update(this);
     }
 
-    public void playMp(Article article) {
+    public void playMp(Item article) {
         Singleton.Companion.getInstance().setPlayList(null);
         Singleton.Companion.getInstance().setLastArticle(article);
         registerReceiver();
@@ -273,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         }
     }
 
-    public void playMp(List<Article> articles) {
+    public void playMp(List<Item> articles) {
         if (!getIntent().getBooleanExtra(
                 FROM_BLE,false)){
             return;
@@ -365,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
     }
 
 
-    public void download(Article article) {
+    public void download(Item article) {
         if (checkPermission()) {
             registerReceiver();
             Snackbar.make(progressBar, "הורדה מתחילה", Snackbar.LENGTH_LONG).show();
@@ -391,8 +393,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
 
     }
 
-    @Override
-    public void playMp(List<Article> articles, int index) {
+    public void playMp(List<Item> articles, int index) {
         if (index<0) return;
         if (!getIntent().getBooleanExtra(FROM_BLE,true)){
             return;

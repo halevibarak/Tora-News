@@ -16,13 +16,13 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.barak.tabs.Parser.Article
 import com.barak.tabs.R
 import com.barak.tabs.app.AppUtility
 import com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_ERR
 import com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_TAB_ACTION
 import com.barak.tabs.app.Singleton
 import com.barak.tabs.app.Singleton.Companion.getInstance
+import com.barak.tabs.models.Item
 import com.barak.tabs.notif.NotificationHelper
 import com.barak.tabs.notif.NotificationHelper.PRIMARY_CHANNEL
 import com.barak.tabs.ui.MainActivity
@@ -70,7 +70,7 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
                     return Service.START_NOT_STICKY
                 }
                 mUrl = AppUtility.getMainExternalFolder().absolutePath + "/" + mTitle
-                val art = Article(mTitle!! + " ", mUrl!!, "", null)
+                val art = Item(mTitle!! + " ", mUrl!!)
                 Singleton.getInstance().lastArticle = art
                 Singleton.getInstance().service =this
                 stop4Play()
@@ -165,7 +165,7 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
 
     }
 
-    override fun play(articles: List<Article>, title: String, playerView_: PlayerControlView) {
+    override fun play(articles: List<Item>, title: String, playerView_: PlayerControlView) {
         PlayerWidget.update(applicationContext)
         ListWidget.update(applicationContext)
         var url = articles.get(0).link

@@ -1,6 +1,6 @@
 package com.barak.tabs.service
 
-import com.barak.tabs.Parser.Article
+import com.barak.tabs.models.Item
 import com.google.android.exoplayer2.ui.PlayerControlView
 
 
@@ -15,5 +15,5 @@ interface Mp3Service {
 
     fun getTitle(): String
     fun isPlayingNow(): Boolean
-    fun play(articles: List<Article>, Title: String, playerView: PlayerControlView)
+    fun play(articles: List<Item>, Title: String, playerView: PlayerControlView)
 }
