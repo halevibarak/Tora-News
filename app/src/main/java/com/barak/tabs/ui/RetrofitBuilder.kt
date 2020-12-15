@@ -2,16 +2,16 @@ package com.barak.tabs.ui
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 object RetrofitBuilder {
 
     const val BASE_URL = "https://api.rss2json.com/v1/"
 
     val retrofitBuilder: Retrofit.Builder by lazy {
-
         Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create())
     }
 
 
