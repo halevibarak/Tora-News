@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.barak.tabs.R;
-import com.barak.tabs.app.App;
 import com.barak.tabs.model.MyTab;
 import com.barak.tabs.models.Item;
 import com.barak.tabs.ui.ActionInterface;
@@ -70,8 +69,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case 0:
                 LessonViewHolder lessonViewHolder = (LessonViewHolder) view_holder;
                 if (article != null) {
-                    lessonViewHolder.titleView.setText(App.convertToUTF8(article.getTitle()));
-                    lessonViewHolder.descView.setText(App.convertToUTF8(article.getDescription()));
+                    lessonViewHolder.titleView.setText((article.getTitle()));
+                    lessonViewHolder.descView.setText((article.getDescription()));
                     lessonViewHolder.playView.setVisibility(View.VISIBLE);
                     if (!mShowMore) {
                         lessonViewHolder.moreButton.setVisibility(View.GONE);
@@ -130,6 +129,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     newsViewHolder.titleView.setText((article.getTitle()));
                     newsViewHolder.descView.setText(Html.fromHtml(article.getDescription().replace("FFFFCC", "FFFFFF")));
                     newsViewHolder.moreButton.setVisibility(View.GONE);
+                    if (article.getEnclosure().getLink().endsWith("mp3")){
+                        article.setLink(article.getEnclosure().getLink());
+                    }
                     if (article.getLink().endsWith("mp3")){
                         newsViewHolder.playView.setVisibility(View.VISIBLE);
                         newsViewHolder.itemView.setOnLongClickListener(view -> {

@@ -1,7 +1,6 @@
 package com.barak.tabs.ui
 
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 object RetrofitBuilder {
@@ -16,7 +15,6 @@ object RetrofitBuilder {
 
 
     val apiService: ApiService by lazy {
-
         retrofitBuilder.build()
             .create(ApiService::class.java)
     }

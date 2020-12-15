@@ -37,7 +37,7 @@ class FragmentArticle : Fragment(), ActionInterface {
     private var mListener: OnCompleteListener? = null
 //    private val articleViewModel: ArticleViewModel by viewModels()
     private lateinit var viewModel: ArticleViewModel
-    private var myTab: MyTab? = null
+    private lateinit var myTab: MyTab
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -130,14 +130,12 @@ class FragmentArticle : Fragment(), ActionInterface {
 
     private fun goListen(articles: List<Item>) {
         if (articles[0].link.endsWith("mp3")) {
-            articles[0].title = App.convertToUTF8(articles[0].title)
             mListener!!.playMp(articles)
         }
     }
 
     override fun goListen(article: Item) {
         if (article.link.endsWith("mp3")) {
-            article.title = App.convertToUTF8(article.title)
             mListener!!.playMp(article)
         }
     }
@@ -216,7 +214,6 @@ class FragmentArticle : Fragment(), ActionInterface {
         if (myTab!!.tabType == MyTab.TabType.LOCAL) {
             LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(broadcastReceiver!!)
         }
-        myTab = null
         broadcastReceiver = null
         super.onDestroyView()
     }

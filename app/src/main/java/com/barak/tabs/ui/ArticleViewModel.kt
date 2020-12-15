@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.atdev.feedsrssreader.pojo.models.RootObject
+import com.barak.tabs.models.RootObject
 
 /**
  * Created by Barak on 1/10/2018.
@@ -20,15 +20,14 @@ class ArticleViewModel() :  ViewModel() {
             }
 
     fun setRssUrl(rssUrl: String) {
-        val update = rssUrl
-        if (_rssUrl.value == update) {
-            return
-        }
-        _rssUrl.value = update
+//        if (_rssUrl.value == rssUrl) {
+//            return
+//        }
+        _rssUrl.value = rssUrl
     }
 
     fun cancelJob() {
-        RepoGetFeeds.cancelJob()
+//        RepoGetFeeds.cancelJob()
     }
     companion object {
         @JvmField val NOTIF_ALLOW = "NOTIF_ALLOW"

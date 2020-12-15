@@ -2,7 +2,7 @@ package com.barak.tabs.models
 
 data class Item(var title: String,
                 val pubDate: String = "",
-                val link: String = "",
+                var link: String = "",
                 val guid: String = "",
                 val author: String = "",
                 val thumbnail: String = "",
@@ -12,7 +12,8 @@ data class Item(var title: String,
                 val categories: List<String> = emptyList())
 
 {
-    constructor(title: String,link: String) : this( title,"",link,"","","","","",
+
+    constructor(title: String, link: String) : this( title,"",link,"","","","","",
             Enclosure(""),emptyList())
 
 }

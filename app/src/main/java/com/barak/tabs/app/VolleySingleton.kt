@@ -1,6 +1,5 @@
 package com.barak.tabs.app
 
-import android.content.Context
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
@@ -22,7 +21,7 @@ class VolleySingleton {
 
 
     val requestQueue: RequestQueue by lazy {
-        Volley.newRequestQueue(App.getInstance_())
+        Volley.newRequestQueue(App.getInstance())
     }
 
     fun <T> addToRequestQueue(req: Request<T>) {

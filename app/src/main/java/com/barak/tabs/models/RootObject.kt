@@ -1,9 +1,9 @@
-package com.atdev.feedsrssreader.pojo.models
+package com.barak.tabs.models
 
-import com.barak.tabs.models.Item
+import com.atdev.feedsrssreader.pojo.models.Feed
 
 data class RootObject(
-    val status: String,
-    val feed: Feed,
-    val items: List<Item>
+        val status: String,
+        val feed: Feed,
+        val items: List<Item>
 )

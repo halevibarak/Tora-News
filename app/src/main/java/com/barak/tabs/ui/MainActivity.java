@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
                         return;
                     }
                 }
-                String title = App.convertToUTF8(mRabbiPost.getTitle());
+                String title = mRabbiPost.getTitle();
                 String newtitle = "";
                 for (int i = 1; i < title.length(); i = i + 2) {
                     newtitle = newtitle + title.charAt(i);
@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
                 int pos2 = newtitle.indexOf("(");
                 if (pos2 > 0)
                     newtitle = newtitle.substring(0, pos2 - 1);
-                arrayList.add(new MyTab(App.convertToUTF8(newtitle), getString(R.string.main_url) + addToLink, MyTab.TabType.MEIR, true));
+                arrayList.add(new MyTab((newtitle), getString(R.string.main_url) + addToLink, MyTab.TabType.MEIR, true));
                 App.setStringArrayPref_(arrayList);
                 viewPagerAdapter.updatePages(App.getVisTabs());
                 progressBar.setVisibility(View.GONE);
@@ -373,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
             Snackbar.make(progressBar, "הורדה מתחילה", Snackbar.LENGTH_LONG).show();
             String newtitle = "";
             if (article.getLink().contains("meir")) {
-                String title = App.convertToUTF8(article.getTitle());
+                String title = (article.getTitle());
                 for (int i = 1; i < title.length(); i = i + 2) {
                     newtitle = newtitle + title.charAt(i);
                 }
@@ -473,7 +473,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
                     registerReceiver();
                     String newtitle = "";
                     if (mArticle.getLink().contains("meir")) {
-                        String title = App.convertToUTF8(mArticle.getTitle());
+                        String title = (mArticle.getTitle());
                         for (int i = 1; i < title.length(); i = i + 2) {
                             newtitle = newtitle + title.charAt(i);
                         }

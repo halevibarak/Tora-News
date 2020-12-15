@@ -17,8 +17,6 @@
 
 package com.barak.tabs.Parser;
 
-import com.barak.tabs.app.App;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -61,7 +59,7 @@ public class XMLParser extends Observable {
                 } else if (xmlPullParser.getName().equalsIgnoreCase("title")) {
                     if (insideItem) {
                         String title = xmlPullParser.nextText();
-                        currentArticle.setTitle(UTF16 ? App.convertToUTF8_(title):title);
+                        currentArticle.setTitle(UTF16 ? (title):title);
                     }
 
                 } else if (xmlPullParser.getName().equalsIgnoreCase("link")) {
@@ -78,7 +76,7 @@ public class XMLParser extends Observable {
                 }  else if (xmlPullParser.getName().equalsIgnoreCase("description")) {
                     if (insideItem) {
                         String description = xmlPullParser.nextText();
-                        currentArticle.setDescription(UTF16 ? App.convertToUTF8_(description):description);
+                        currentArticle.setDescription(description);
                     }
                 }
 

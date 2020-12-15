@@ -1,6 +1,6 @@
 package com.barak.tabs.ui
 
-import com.atdev.feedsrssreader.pojo.models.RootObject
+import com.barak.tabs.models.RootObject
 import retrofit2.http.GET
 import retrofit2.http.Query
 

@@ -11,7 +11,6 @@ import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,16 +31,10 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         mInstance = this;
-//        if (LeakCanary.isInAnalyzerProcess(this)) {
-//            return;
-//        }
-//        LeakCanary.install(this);
+
     }
 
-    private static synchronized App getInstance() {
-        return mInstance;
-    }
-    public static synchronized App getInstance_() {
+    public static synchronized App getInstance() {
         return mInstance;
     }
 
@@ -109,20 +102,6 @@ public class App extends Application {
         }
         return gson.fromJson(json, type);
 
-    }
-
-
-    public static String convertToUTF8(String s) {
-        return s;
-    }
-    public static String convertToUTF8_(String s) {
-        String out = null;
-        try {
-            out = new String(s.getBytes("UTF-16BE"), "windows-1255");
-        } catch (UnsupportedEncodingException e) {
-            return "";
-        }
-        return out;
     }
 
 
