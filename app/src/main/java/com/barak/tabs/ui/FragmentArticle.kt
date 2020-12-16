@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.barak.tabs.models.Item
 import com.barak.tabs.R
 import com.barak.tabs.adapter.RecyclerViewAdapter
-import com.barak.tabs.app.App
 import com.barak.tabs.app.AppUtility
 import com.barak.tabs.app.DownloadToExtStrService
 import com.barak.tabs.app.Singleton.Companion.getInstance
@@ -59,9 +57,9 @@ class FragmentArticle : Fragment(), ActionInterface {
         super.onViewCreated(view, savedInstanceState)
         swiperefresh.setOnRefreshListener { modelConfig() }
         myTab = requireArguments().getSerializable(FRAGTYPE) as MyTab
-        val showMore = myTab!!.url == requireContext().getString(R.string.main_url)
-        adapter = RecyclerViewAdapter(mArticles, showMore, this, myTab!!.tabType)
-        if (myTab!!.tabType == MyTab.TabType.LOCAL) {
+        val showMore = myTab.url == requireContext().getString(R.string.main_url)
+        adapter = RecyclerViewAdapter(mArticles, showMore, this, myTab.tabType)
+        if (myTab.tabType == MyTab.TabType.LOCAL) {
             updateViewLocal(view)
         } else {
             modelConfig()
@@ -73,7 +71,7 @@ class FragmentArticle : Fragment(), ActionInterface {
         recyclerView.addItemDecoration(dividerItemDecoration)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
-        if (myTab!!.tabType == MyTab.TabType.LOCAL) {
+        if (myTab.tabType == MyTab.TabType.LOCAL) {
             registerReceiver()
         }
     }
@@ -91,30 +89,29 @@ class FragmentArticle : Fragment(), ActionInterface {
     private fun modelConfig() {
         swiperefresh.isRefreshing = true
         viewModel = ViewModelProvider(this).get(ArticleViewModel::class.java)
-        viewModel.rootObject.observe(viewLifecycleOwner, Observer { rssObject ->
-            updateView(rssObject.items)
+        viewModel.rss.observe(viewLifecycleOwner, Observer {
+            updateView(it.items)
         })
-        viewModel.setRssUrl(myTab!!.url)
+        viewModel.queryChannel.offer(myTab.url)
 
         swiperefresh.isRefreshing = true
         swiperefresh.setOnRefreshListener {
-            viewModel.setRssUrl(myTab!!.url)
+            viewModel.queryChannel.offer(myTab.url)
         }
 
     }
 
     private fun updateView(articles: List<Item>) {
         swiperefresh.isRefreshing = false
-        if (articles == null || articles.size == 0) {
-            errorTextView!!.visibility = View.VISIBLE
+        if (articles.isEmpty()) {
+            errorTextView.visibility = View.VISIBLE
             return
         }
         if (getInstance().playList == null && articles[0].link.endsWith("mp3")) {
             val prefs = requireContext().getSharedPreferences(ArticleViewModel.NOTIF_ALLOW, Context.MODE_PRIVATE)
-            val articlesList = articles
-            getInstance().playList = articlesList
+            getInstance().playList = articles
             if (prefs.getBoolean(ArticleViewModel.START_ALLOW, false)) {
-                goListen(articlesList)
+                goListen(articles)
             }
         }
         errorTextView.visibility = View.GONE
@@ -125,30 +122,30 @@ class FragmentArticle : Fragment(), ActionInterface {
                 if (!mArticles.contains(ne)) mArticles.add(0, ne)
             }
         }
-        adapter!!.notifyDataSetChanged()
+        adapter?.notifyDataSetChanged()
     }
 
     private fun goListen(articles: List<Item>) {
         if (articles[0].link.endsWith("mp3")) {
-            mListener!!.playMp(articles)
+            mListener?.playMp(articles)
         }
     }
 
     override fun goListen(article: Item) {
         if (article.link.endsWith("mp3")) {
-            mListener!!.playMp(article)
+            mListener?.playMp(article)
         }
     }
 
     override fun goMore(article: Item) {
-        mListener!!.mainMore(article)
+        mListener?.mainMore(article)
     }
 
     override fun goDownload(article: Item) {
         if (article.link.endsWith("mp3")) {
             val alert = AlertDialog.Builder(context)
             alert.setTitle(getString(R.string.download_title)).setMessage(getString(R.string.download_text))
-                    .setNeutralButton(getString(R.string.submit)) { dialogInterface: DialogInterface?, d: Int -> mListener!!.download(article) }
+                    .setNeutralButton(getString(R.string.submit)) { dialogInterface: DialogInterface?, d: Int -> mListener?.download(article) }
                     .setOnCancelListener { dialogInterface: DialogInterface? -> }
             alert.show()
         }
@@ -163,7 +160,7 @@ class FragmentArticle : Fragment(), ActionInterface {
 
     override fun goListenLocal(article: Item) {
         if (article.title.endsWith("mp3")) {
-            mListener!!.playLocalMp(article)
+            mListener?.playLocalMp(article)
         }
     }
 
@@ -182,9 +179,9 @@ class FragmentArticle : Fragment(), ActionInterface {
                             }
                             Snackbar.make(errorTextView, "קובץ נמחק", Snackbar.LENGTH_LONG).show()
                             if (files.size < 2) {
-                                mListener!!.removeAddDownloadTab()
+                                mListener?.removeAddDownloadTab()
                             } else {
-                                adapter!!.notifyDataSetChanged()
+                                adapter?.notifyDataSetChanged()
                             }
                         }
                     }
@@ -211,7 +208,7 @@ class FragmentArticle : Fragment(), ActionInterface {
 
     override fun onDestroyView() {
         recyclerView.adapter = null
-        if (myTab!!.tabType == MyTab.TabType.LOCAL) {
+        if (myTab.tabType == MyTab.TabType.LOCAL) {
             LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(broadcastReceiver!!)
         }
         broadcastReceiver = null
@@ -228,16 +225,16 @@ class FragmentArticle : Fragment(), ActionInterface {
     private var broadcastReceiver: BroadcastReceiver? = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == DownloadToExtStrService.DOWNLOAD_TAB_ACTION) {
-                if (myTab!!.tabType == MyTab.TabType.LOCAL) {
+                if (myTab.tabType == MyTab.TabType.LOCAL) {
                     val files = AppUtility.getMainExternalFolder().list()
                     mArticles.clear()
                     for (str in files) {
                         mArticles.add(Item(str))
                     }
                     if (files.size < 2) {
-                        mListener!!.removeAddDownloadTab()
+                        mListener?.removeAddDownloadTab()
                     }
-                    adapter!!.notifyDataSetChanged()
+                    adapter?.notifyDataSetChanged()
                 }
             }
         }

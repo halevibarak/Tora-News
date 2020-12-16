@@ -129,9 +129,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     newsViewHolder.titleView.setText((article.getTitle()));
                     newsViewHolder.descView.setText(Html.fromHtml(article.getDescription().replace("FFFFCC", "FFFFFF")));
                     newsViewHolder.moreButton.setVisibility(View.GONE);
-                    if (article.getEnclosure().getLink().endsWith("mp3")){
-                        article.setLink(article.getEnclosure().getLink());
-                    }
                     if (article.getLink().endsWith("mp3")){
                         newsViewHolder.playView.setVisibility(View.VISIBLE);
                         newsViewHolder.itemView.setOnLongClickListener(view -> {
