@@ -80,6 +80,14 @@ public class XMLParser extends Observable {
                         String description = xmlPullParser.nextText();
                         currentArticle.setDescription(UTF16 ? App.convertToUTF8_(description):description);
                     }
+                }else if (xmlPullParser.getName().equalsIgnoreCase("pubDate")) {
+                    if (insideItem) {
+                        String pubDate = xmlPullParser.nextText();
+                        if (pubDate.endsWith("+0200") || pubDate.endsWith("+0000")){
+                            pubDate = pubDate.substring(0,pubDate.length()-6);
+                        }
+                        currentArticle.setPubDate(UTF16 ? App.convertToUTF8_(pubDate):pubDate);
+                    }
                 }
 
             } else if (eventType == XmlPullParser.END_TAG && xmlPullParser.getName().equalsIgnoreCase("item")) {

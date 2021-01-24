@@ -51,10 +51,10 @@ applicationContext
             views.setTextViewText(R.id.txtvTitle, playbackService!!.getTitle())
             views.setViewVisibility(R.id.txtvTitle, View.VISIBLE)
             if (playbackService!!.isPlayingNow()) {
-                views.setImageViewResource(R.id.butPlay, R.drawable.pause_g)
+                views.setImageViewResource(R.id.butPlay, R.drawable.a_pause)
                 views.setContentDescription(R.id.butPlay, getString(R.string.pause_label))
             } else {
-                views.setImageViewResource(R.id.butPlay, R.drawable.play_g)
+                views.setImageViewResource(R.id.butPlay, R.drawable.a_play)
                 views.setContentDescription(R.id.butPlay, getString(R.string.play_label))
             }
             views.setOnClickPendingIntent(R.id.butPlay, pitPlay)
@@ -67,7 +67,7 @@ applicationContext
             }
             views.setOnClickPendingIntent(R.id.layout_left, pitMain)
             views.setOnClickPendingIntent(R.id.butPlay, pitPlay)
-            views.setImageViewResource(R.id.butPlay, R.drawable.play_g)
+            views.setImageViewResource(R.id.butPlay, R.drawable.a_play)
         }
         manager.updateAppWidget(playerWidget, views)
     }

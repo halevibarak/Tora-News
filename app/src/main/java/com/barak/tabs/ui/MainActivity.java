@@ -167,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+
     }
 
     @Override
@@ -285,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         }
         if (mMP3Service != null && mMP3Service.isPlayOrPause()) {
             mMP3Service.stop4Play();
-            mMP3Service.play(articles, articles.get(0).getTitle(), playerView);
+            mMP3Service.play(articles, 0, playerView);
             return;
         }
         Intent it = new Intent(this, Mp3ServiceImpl.class);
@@ -400,12 +401,12 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         Singleton.Companion.getInstance().setPlayList(articles);
         Singleton.Companion.getInstance().setLastArticle(articles.get(index));
         registerReceiver();
-        if (Singleton.Companion.getInstance().getService() != null) {
+        if (mMP3Service == null && Singleton.Companion.getInstance().getService() != null) {
             mMP3Service = Singleton.Companion.getInstance().getService();
         }
         if (mMP3Service != null && mMP3Service.isPlayOrPause()) {
             mMP3Service.stop4Play();
-            mMP3Service.play(articles, articles.get(index).getTitle(), playerView);
+            mMP3Service.play(articles, index, playerView);
             return;
         }
         Intent it = new Intent(this, Mp3ServiceImpl.class);
@@ -513,8 +514,14 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
             mMP3Service.bindPlayerView(playerView);
             if (mArticle != null && !mMP3Service.isPlayingNow()) {
                 mMP3Service.stop();
+                int index = 0;
+                for (int i = 0;i<Singleton.Companion.getInstance().getPlayList().size();i++){
+                    if (Singleton.Companion.getInstance().getPlayList().get(i).getTitle().equals(mArticle.getTitle())){
+                        index = i;
+                    }
+                }
                 if (Singleton.Companion.getInstance().getPlayList() != null) {
-                    mMP3Service.play(Singleton.Companion.getInstance().getPlayList(), mArticle.getTitle(), playerView);
+                    mMP3Service.play(Singleton.Companion.getInstance().getPlayList(), index, playerView);
                 } else {
                     mMP3Service.play(mArticle.getLink(), mArticle.getTitle(), playerView);
                 }

@@ -37,7 +37,6 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.ui.PlayerControlView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.RepeatModeUtil
-import com.google.firebase.crashlytics.internal.model.CrashlyticsReport
 import java.io.IOException
 
 class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMediaSource.EventListener {
@@ -70,7 +69,7 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
                     return Service.START_NOT_STICKY
                 }
                 mUrl = AppUtility.getMainExternalFolder().absolutePath + "/" + mTitle
-                val art = Article(mTitle!! + " ", mUrl!!, "", null)
+                val art = Article(mTitle!! + " ", mUrl!!, "", "")
                 Singleton.getInstance().lastArticle = art
                 Singleton.getInstance().service =this
                 stop4Play()
@@ -80,7 +79,9 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
             if (ACAO_PLAY == intent.getStringExtra(EXTRA_ACAO)) {
                 playPause()
             }else if (ACAO_NEXT == intent.getStringExtra(EXTRA_ACAO)) {
-                exoNext()
+                mPlayer?.next()
+            }else if (ACAO_PREV == intent.getStringExtra(EXTRA_ACAO)) {
+                mPlayer?.previous()
             } else if (ACAO_STOP == intent.getStringExtra(EXTRA_ACAO)) {
                 stop()
             }
@@ -89,9 +90,6 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
         return START_NOT_STICKY
     }
 
-    private fun exoNext() {
-        mPlayer?.next()
-    }
 
     private fun playPause() {
         if (mPlayer == null) {
@@ -165,12 +163,12 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
 
     }
 
-    override fun play(articles: List<Article>, title: String, playerView_: PlayerControlView) {
+    override fun play(articles: List<Article>, index:Int, playerView_: PlayerControlView) {
         PlayerWidget.update(applicationContext)
         ListWidget.update(applicationContext)
-        var url = articles.get(0).link
+        var url = articles[index].link
 
-        if (title != null) mTitle = title
+        mTitle = articles.get(index).title
         if (url != null && !mIsPlaying && !mIsPause) {
             try {
                 mUrl = url.replace(" ", "%20")
@@ -192,6 +190,7 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
 
                 mPlayer?.addListener(this)
                 mPlayer?.prepare(mediaSource)
+                mPlayer?.seekTo(index,2)
                 mPlayer?.playWhenReady = true
                 mIsPause = false
                 mIsPlaying = true
@@ -264,18 +263,22 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
         itStop.putExtra(EXTRA_ACAO, ACAO_STOP)
         val itNext = Intent(this, Mp3ServiceImpl::class.java)
         itNext.putExtra(EXTRA_ACAO, ACAO_NEXT)
+        val itPrev = Intent(this, Mp3ServiceImpl::class.java)
+        itPrev.putExtra(EXTRA_ACAO, ACAO_PREV)
         val stackBuilder = TaskStackBuilder.create(this)
         stackBuilder.addParentStack(MainActivity::class.java)
         stackBuilder.addNextIntent(Intent(this, MainActivity::class.java))
         val pitPlayPause = PendingIntent.getService(this, 1, itPlayPause, 0)
         val pitStop = PendingIntent.getService(this, 3, itStop, 0)
         val pitNext = PendingIntent.getService(this, 2, itNext, 0)
+        val pitPrev = PendingIntent.getService(this, 4, itPrev, 0)
 
         val views = RemoteViews(packageName, R.layout.layout_notif)
         views.setOnClickPendingIntent(R.id.play_v, pitPlayPause)
-        views.setImageViewResource(R.id.play_v, if (showPlay) R.drawable.play_g else R.drawable.pause_g)
+        views.setImageViewResource(R.id.play_v, if (showPlay) R.drawable.a_play else R.drawable.a_pause)
         views.setOnClickPendingIntent(R.id.stop_v, pitStop)
         views.setOnClickPendingIntent(R.id.play_n, pitNext)
+        views.setOnClickPendingIntent(R.id.play_prev, pitPrev)
         views.setTextViewText(R.id.text_v, mTitle)
         val noti = NotificationHelper(applicationContext)
 
@@ -316,13 +319,17 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
         itStop.putExtra(EXTRA_ACAO, ACAO_STOP)
         val itNext = Intent(this, Mp3ServiceImpl::class.java)
         itNext.putExtra(EXTRA_ACAO, ACAO_NEXT)
+        val itPrev = Intent(this, Mp3ServiceImpl::class.java)
+        itPrev.putExtra(EXTRA_ACAO, ACAO_PREV)
         val pitPlayPausa = PendingIntent.getService(this, 1, itPlayPause, 0)
         val pitStop = PendingIntent.getService(this, 3, itStop, 0)
         val pitNext = PendingIntent.getService(this, 2, itNext, 0)
+        val pitPrev = PendingIntent.getService(this, 4, itPrev, 0)
         val views = RemoteViews(packageName, R.layout.layout_notif)
         views.setOnClickPendingIntent(R.id.play_v, pitPlayPausa)
-        views.setImageViewResource(R.id.play_v, if (showPlay) R.drawable.play_g else R.drawable.pause_g)
+        views.setImageViewResource(R.id.play_v, if (showPlay) R.drawable.a_play else R.drawable.a_pause)
         views.setOnClickPendingIntent(R.id.play_n, pitNext)
+        views.setOnClickPendingIntent(R.id.play_prev, pitPrev)
         views.setOnClickPendingIntent(R.id.stop_v, pitStop)
         views.setTextViewText(R.id.text_v, mTitle)
         val resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
@@ -452,6 +459,8 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
         val EXTRA_ACAO = "acao"
         @JvmField
         val ACAO_NEXT = "next"
+        @JvmField
+        val ACAO_PREV = "prev"
         @JvmField
         val ACAO_PLAY = "play_pause"
         @JvmField

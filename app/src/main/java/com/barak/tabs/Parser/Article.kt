@@ -9,13 +9,13 @@ data class Article(
         var title: String,
         var link: String,
         var description: String,
-        val pubDate: Date?) {
+        var pubDate: String="") {
     constructor(title: String) : this(title, "",
-            "", null
+            "", ""
     )
 
     constructor() : this("", "",
-            "", null
+            "", ""
     )
 
     override fun equals(other: Any?): Boolean {

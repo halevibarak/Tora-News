@@ -54,6 +54,8 @@ public class ManageActivity extends AppCompatActivity {
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
         articleAdapter = new TabManageAdapter(mPages);
         mRecyclerView.setAdapter(articleAdapter);
+
+
         prefs = getSharedPreferences(NOTIF_ALLOW, MODE_PRIVATE);
         boolean allow = prefs.getBoolean(NOTIF_ALLOW, false);
         boolean allowStart = prefs.getBoolean(START_ALLOW, false);
@@ -85,8 +87,7 @@ public class ManageActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = prefs.edit();
             if (((CheckBox) v).isChecked()) {
                 editor.putBoolean(START_ALLOW, true);
-                Intent intent_ = new Intent(ManageActivity.this, BootComplete.BroadcastService.class);
-                startService(intent_);
+                BootComplete.checkStartVpnOnBoot(this,new BootComplete.BroadcastService());
             } else {
                 editor.putBoolean(START_ALLOW, false);
             }

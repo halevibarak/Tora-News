@@ -6,6 +6,7 @@
     android:minHeight="93dp"
     android:background="@color/black"
     android:orientation="vertical"
+    android:layoutDirection="ltr"
     >
 
 
@@ -18,13 +19,14 @@
         android:layout_marginLeft="6dp"
         android:orientation="horizontal">
         <ImageView
+            android:id="@+id/stop_v"
             style="Custom Notification Title"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:padding="3dp"
-            android:gravity="center"
-            android:src="@drawable/ic"
-            />
+            android:gravity="top"
+            android:src="@drawable/stop_g" />
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -37,7 +39,7 @@
             <TextView
                 android:id="@+id/text_v"
                 android:layout_width="wrap_content"
-                android:textColor="@color/notif_gr"
+                android:textColor="@color/white"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
                 android:textSize="16dp"
@@ -51,6 +53,28 @@
 
 
         </LinearLayout>
+        <ImageView
+            android:id="@+id/play_prev"
+            style="Custom Notification Title"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="8dp"
+            android:layout_marginRight="-8dp"
+            android:gravity="center"
+            android:src="@drawable/a_prev"
+            android:text="play" />
+
+       <ImageView
+            android:id="@+id/play_v"
+            style="Custom Notification Title"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="8dp"
+            android:layout_marginRight="-8dp"
+            android:gravity="center"
+            android:src="@drawable/a_play"
+            android:text="play" />
+
 
         <ImageView
             android:id="@+id/play_n"
@@ -60,31 +84,10 @@
             android:padding="7dp"
             android:layout_marginRight="-8dp"
             android:gravity="center"
-            android:src="@drawable/arrow_double_right"
+            android:src="@drawable/a_next"
             />
 
-        <ImageView
-            android:id="@+id/play_v"
-            style="Custom Notification Title"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:padding="8dp"
-            android:layout_marginRight="-8dp"
-            android:gravity="center"
-            android:src="@drawable/play_g"
-            android:text="play" />
 
-        <ImageView
-            android:id="@+id/stop_v"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="-8dp"
-            android:layout_marginRight="-8dp"
-            android:padding="8dp"
-            android:gravity="center"
-            android:src="@drawable/stop_g"
-
-            />
 
 
 

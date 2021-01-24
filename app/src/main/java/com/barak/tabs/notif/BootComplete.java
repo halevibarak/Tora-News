@@ -25,6 +25,7 @@ import com.barak.tabs.ui.MainActivity;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.barak.tabs.ui.ArticleModel.NOTIF_ALLOW;
+import static com.barak.tabs.ui.ArticleModel.START_ALLOW;
 
 public class BootComplete extends BroadcastReceiver {
 
@@ -34,8 +35,9 @@ public class BootComplete extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.d("barakk", "BootComplete");
         SharedPreferences prefs = context.getSharedPreferences(NOTIF_ALLOW, MODE_PRIVATE);
-        boolean allow = prefs.getBoolean(NOTIF_ALLOW, false);
+        boolean allow = prefs.getBoolean(START_ALLOW, false);
         if (allow){
+            Log.d("barakk", "checkStartVpnOnBoot");
             mSMSreceiver = new BroadcastService();
             checkStartVpnOnBoot(context,mSMSreceiver);
         }
@@ -57,14 +59,16 @@ public class BootComplete extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            Log.d("barakk", "onReceive:"+action);
             if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
                 SharedPreferences prefs = context.getSharedPreferences(NOTIF_ALLOW, MODE_PRIVATE);
-                boolean allow = prefs.getBoolean(NOTIF_ALLOW, false);
+                boolean allow = prefs.getBoolean(START_ALLOW, false);
                 if (allow){
                     Intent i = new Intent(context, MainActivity.class);
                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     i.putExtra(FROM_BLE, true);
                     context.startActivity(i);
+                    Log.d("barakk", "startActivity");
                 }
             } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
                 if (Singleton.Companion.getInstance().getService() != null) {

@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +39,7 @@ import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_TAB_ACTION;
+import static com.barak.tabs.notif.BootComplete.BroadcastService.FROM_BLE;
 import static com.barak.tabs.ui.ArticleModel.NOTIF_ALLOW;
 import static com.barak.tabs.ui.ArticleModel.START_ALLOW;
 
@@ -57,7 +60,7 @@ public class FragmentArticle extends Fragment implements ActionInterface {
     private MyTab myTab;
     private SwipeRefreshLayout mySwipeRefreshLayout;
     private long mTimeStamp;
-
+    Handler mHandler = new Handler();//In UI Thread
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
@@ -90,9 +93,12 @@ public class FragmentArticle extends Fragment implements ActionInterface {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         errorTextView = view.findViewById(R.id.text_e);
         mySwipeRefreshLayout = view.findViewById(R.id.swiperefresh);
-        mySwipeRefreshLayout.setOnRefreshListener(() -> modelConfig()
+        mySwipeRefreshLayout.setOnRefreshListener(() ->
+                modelConfig()
+
         );
         myTab = ((MyTab) getArguments().getSerializable(FRAGTYPE));
         boolean showMore = (myTab.getUrl().equals(getContext().getString(R.string.main_url)));
@@ -125,9 +131,11 @@ public class FragmentArticle extends Fragment implements ActionInterface {
         if (myTab.getTabType() == MyTab.TabType.LOCAL) {
             registerReceiver();
         }
+
     }
 
     private void modelConfig() {
+        mHandler.postDelayed(() -> mySwipeRefreshLayout.setRefreshing(false), 2000);
         if (myTab.getTabType() == MyTab.TabType.LOCAL) {
 
             String[] files = AppUtility.getMainExternalFolder().list();
@@ -151,13 +159,16 @@ public class FragmentArticle extends Fragment implements ActionInterface {
                         errorTextView.setVisibility(View.VISIBLE);
                         return;
                     }
-                    if (Singleton.Companion.getInstance().getPlayList() == null && articles.get(0).getLink().endsWith("mp3")) {
+                    if (articles.get(0).getLink().endsWith("mp3")) {
                         SharedPreferences prefs = getContext().getSharedPreferences(NOTIF_ALLOW, MODE_PRIVATE);
                         List<Article> articlesList = (List<Article>) articles;
-                        Singleton.Companion.getInstance().setPlayList(articlesList);
-                        if (prefs.getBoolean(START_ALLOW, false)) {
-                            goListen(articlesList);
+                        if (getActivity().getIntent() !=null && getActivity().getIntent().getBooleanExtra(FROM_BLE,true)){
+                            Singleton.Companion.getInstance().setPlayList(articlesList);
+                            if (prefs.getBoolean(START_ALLOW, false)) {
+                                goListen(articlesList);
+                            }
                         }
+
                     }
                     errorTextView.setVisibility(View.GONE);
                     if (mArticles.size() == 0) {
@@ -213,13 +224,13 @@ public class FragmentArticle extends Fragment implements ActionInterface {
 
     @Override
     public void goBrowser(Article article) {
-//        String url = article.getLink();
-//        if (!url.startsWith("http://") && !url.startsWith("https://"))
-//            url = "http://" + url;
-//        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-//        try {
-//            startActivity(browserIntent);
-//        } catch ( Exception e) { }
+        String url = article.getLink();
+        if (!url.startsWith("http://") && !url.startsWith("https://"))
+            url = "http://" + url;
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        try {
+            startActivity(browserIntent);
+        } catch ( Exception e) { }
     }
 
     @Override

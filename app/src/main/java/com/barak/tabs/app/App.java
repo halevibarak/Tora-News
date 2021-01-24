@@ -79,13 +79,12 @@ public class App extends Application {
         String json = appSharedPrefs.getString(TABS, "");
         if (json.equals("")) {
             ArrayList<MyTab> start_ = new ArrayList<>();
-            start_.add(new MyTab("ישיבה", getInstance().getString(R.string.main_y), MyTab.TabType.REST, true));
-            start_.add(new MyTab("מכון מאיר", getInstance().getString(R.string.main_url), MyTab.TabType.MEIR, false));
-            start_.add(new MyTab("מאיר מומלצים", getInstance().getString(R.string.main_like), MyTab.TabType.MEIR, false));
-            start_.add(new MyTab("ברכה פיד", getInstance().getString(R.string.main_b), MyTab.TabType.REST, false));
-            start_.add(new MyTab("שאלות ישיבה", getInstance().getString(R.string.main_ask), MyTab.TabType.REST, false));
             start_.add(new MyTab("ערוץ 7", getInstance().getString(R.string.main_7), MyTab.TabType.REST, true));
             start_.add(new MyTab("מבזקים 7", getInstance().getString(R.string.main_7_m), MyTab.TabType.REST, false));
+            start_.add(new MyTab("ישיבה", getInstance().getString(R.string.main_y), MyTab.TabType.REST, true));
+            start_.add(new MyTab("מאיר מומלצים", getInstance().getString(R.string.main_like), MyTab.TabType.MEIR, false));
+            start_.add(new MyTab("ברכה פיד", getInstance().getString(R.string.main_b), MyTab.TabType.REST, false));
+            start_.add(new MyTab("מכון מאיר", getInstance().getString(R.string.main_url), MyTab.TabType.MEIR, false));
             start_.add(new MyTab("הרב שרקי", getInstance().getString(R.string.harav_sharki), MyTab.TabType.MEIR, true));
             start_.add(new MyTab("הרב ביגון", getInstance().getString(R.string.harav_bigon), MyTab.TabType.MEIR, false));
             start_.add(new MyTab("תיקון המידות",                                      getInstance().getString(R.string.harav_tikun), MyTab.TabType.MEIR, false));
@@ -104,6 +103,7 @@ public class App extends Application {
             start_.add(new MyTab("הרב קשתיאל", getInstance().getString(R.string.harav_kashtiel), MyTab.TabType.MEIR, false));
             start_.add(new MyTab("הדף היומי",  getInstance().getString(R.string.harav_yomi), MyTab.TabType.MEIR, false));
             start_.add(new MyTab("מדיטציה יהודית", getInstance().getString(R.string.harav_med), MyTab.TabType.MEIR, false));
+            start_.add(new MyTab("שאלות ישיבה", getInstance().getString(R.string.main_ask), MyTab.TabType.REST, false));
             setStringArrayPref_(start_);
             return start_;
         }

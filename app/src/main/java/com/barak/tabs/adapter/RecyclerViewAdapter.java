@@ -1,5 +1,7 @@
 package com.barak.tabs.adapter;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.SystemClock;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -78,6 +80,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     } else {
                         lessonViewHolder.moreButton.setVisibility(View.VISIBLE);
                     }
+                    if (article.getPubDate().equals("")) {
+                        lessonViewHolder.itemTime.setVisibility(View.GONE);
+                    } else {
+                        lessonViewHolder.itemTime.setVisibility(View.VISIBLE);
+                        lessonViewHolder.itemTime.setText(article.getPubDate());
+                    }
 
                     lessonViewHolder.moreButton.setText(lessonViewHolder.moreButton.getContext().getString(R.string.more_text));
                     if (article.getLink().equals(lessonViewHolder.moreButton.getContext().getString(R.string.donate_url))) {
@@ -85,16 +93,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         lessonViewHolder.moreButton.setVisibility(View.VISIBLE);
                         lessonViewHolder.playView.setVisibility(View.GONE);
                         lessonViewHolder.moreButton.setVisibility(View.GONE);
-//                        lessonViewHolder.moreButton.setOnClickListener(v -> {
-//                            String url = "http://www.meirtv.co.il/Donate/Home/Donate?source=mobile3";
-//                            Intent i = new Intent(Intent.ACTION_VIEW);
-//                            i.setData(Uri.parse(url));
-//                            try {
-//                                v.getContext().startActivity(i);
-//                            } catch ( Exception e) { }
-//
-//
-//                        });
+                        lessonViewHolder.moreButton.setOnClickListener(v -> {
+                            String url = "http://www.meirtv.co.il/Donate/Home/Donate?source=mobile3";
+                            Intent i = new Intent(Intent.ACTION_VIEW);
+                            i.setData(Uri.parse(url));
+                            try {
+                                v.getContext().startActivity(i);
+                            } catch ( Exception e) { }
+
+
+                        });
 
                     } else {
                         lessonViewHolder.moreButton.setOnClickListener(v -> {
@@ -146,6 +154,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             mLisenner.goBrowser(article);
                     });
                     }
+                    if (article.getPubDate().equals("")) {
+                        newsViewHolder.itemTime.setVisibility(View.GONE);
+                    } else {
+                        newsViewHolder.itemTime.setVisibility(View.VISIBLE);
+                        newsViewHolder.itemTime.setText(article.getPubDate());
+                    }
+
                 }
                 break;
         }
@@ -169,13 +184,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             super(itemView_);
             titleView = itemView_.findViewById(R.id.title_item);
             descView = itemView_.findViewById(R.id.desc_item);
+            itemTime = itemView_.findViewById(R.id.text_time);
             moreButton = itemView_.findViewById(R.id.button2);
             playView = itemView_.findViewById(R.id.imgplay);
             itemView = itemView_;
         }
 
         View itemView;
-        TextView moreButton;
+        TextView moreButton,itemTime;
         TextView titleView;
         TextView descView;
         View playView;
@@ -193,6 +209,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             super(itemView_);
             titleView = itemView_.findViewById(R.id.title_item);
             descView = itemView_.findViewById(R.id.desc_item);
+            itemTime = itemView_.findViewById(R.id.text_time);
             moreButton = itemView_.findViewById(R.id.button2);
             playView = itemView_.findViewById(R.id.imgplay);
             itemView = itemView_;
@@ -200,7 +217,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         View itemView;
         TextView moreButton;
-        TextView titleView;
+        TextView titleView,itemTime;
         TextView descView;
         View playView;
     }

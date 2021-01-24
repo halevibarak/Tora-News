@@ -15,5 +15,5 @@ interface Mp3Service {
 
     fun getTitle(): String
     fun isPlayingNow(): Boolean
-    fun play(articles: List<Article>, Title: String, playerView: PlayerControlView)
+    fun play(articles: List<Article>, index:Int, playerView: PlayerControlView)
 }
