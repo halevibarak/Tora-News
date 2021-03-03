@@ -31,7 +31,10 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         mInstance = this;
-
+//        startKoin {
+//            androidContext(this@App)
+//            modules(listOf(appModule, repoModule, viewModelModule))
+//        }
     }
 
     public static synchronized App getInstance() {
@@ -97,6 +100,7 @@ public class App extends Application {
             start_.add(new MyTab("הרב קשתיאל", getInstance().getString(R.string.harav_kashtiel), MyTab.TabType.MEIR, false));
             start_.add(new MyTab("הדף היומי",  getInstance().getString(R.string.harav_yomi), MyTab.TabType.MEIR, false));
             start_.add(new MyTab("מדיטציה יהודית", getInstance().getString(R.string.harav_med), MyTab.TabType.MEIR, false));
+            start_.add(new MyTab("סתם חיובי", getInstance().getString(R.string.harav_pos), MyTab.TabType.REST, true));
             setStringArrayPref_(start_);
             return start_;
         }

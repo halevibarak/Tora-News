@@ -4,26 +4,32 @@ import android.app.AlertDialog
 import android.content.*
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.edit
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.barak.tabs.models.Item
 import com.barak.tabs.R
 import com.barak.tabs.adapter.RecyclerViewAdapter
 import com.barak.tabs.app.AppUtility
 import com.barak.tabs.app.DownloadToExtStrService
-import com.barak.tabs.app.Singleton.Companion.getInstance
+import com.barak.tabs.app.Singleton
 import com.barak.tabs.model.MyTab
+import com.barak.tabs.models.Item
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import org.koin.androidx.scope.currentScope
 import java.io.File
 import java.util.*
 
@@ -33,9 +39,9 @@ class FragmentArticle : Fragment(), ActionInterface {
     private val mArticles = ArrayList<Item>()
     private var adapter: RecyclerViewAdapter? = null
     private var mListener: OnCompleteListener? = null
-//    private val articleViewModel: ArticleViewModel by viewModels()
-    private lateinit var viewModel: ArticleViewModel
+    private val viewModel: ArticleViewModel by viewModels()
     private lateinit var myTab: MyTab
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -53,9 +59,16 @@ class FragmentArticle : Fragment(), ActionInterface {
         return rootView
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override  fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+
+        println()
         swiperefresh.setOnRefreshListener { modelConfig() }
+        val sharedPreferences = requireContext().getSharedPreferences(ArticleViewModel.NOTIF_ALLOW, Context.MODE_PRIVATE)
+        sharedPreferences.edit { putBoolean("key", true) }
+
         myTab = requireArguments().getSerializable(FRAGTYPE) as MyTab
         val showMore = myTab.url == requireContext().getString(R.string.main_url)
         adapter = RecyclerViewAdapter(mArticles, showMore, this, myTab.tabType)
@@ -88,7 +101,6 @@ class FragmentArticle : Fragment(), ActionInterface {
 
     private fun modelConfig() {
         swiperefresh.isRefreshing = true
-        viewModel = ViewModelProvider(this).get(ArticleViewModel::class.java)
         viewModel.rss.observe(viewLifecycleOwner, Observer {
             updateView(it.items)
         })
@@ -98,7 +110,9 @@ class FragmentArticle : Fragment(), ActionInterface {
         swiperefresh.setOnRefreshListener {
             viewModel.queryChannel.offer(myTab.url)
         }
-
+        listOf(10, 20, 3).reduce { sum, element ->
+            Log.e("barakk","sum$sum  element$element")
+             }
     }
 
     private fun updateView(articles: List<Item>) {
@@ -107,9 +121,9 @@ class FragmentArticle : Fragment(), ActionInterface {
             errorTextView.visibility = View.VISIBLE
             return
         }
-        if (getInstance().playList == null && articles[0].link.endsWith("mp3")) {
+        if (Singleton.playList == null && articles[0].link.endsWith("mp3")) {
             val prefs = requireContext().getSharedPreferences(ArticleViewModel.NOTIF_ALLOW, Context.MODE_PRIVATE)
-            getInstance().playList = articles
+            Singleton.playList = articles
             if (prefs.getBoolean(ArticleViewModel.START_ALLOW, false)) {
                 goListen(articles)
             }

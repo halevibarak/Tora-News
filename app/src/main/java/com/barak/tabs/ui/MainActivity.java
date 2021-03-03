@@ -251,11 +251,11 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
     }
 
     public void playMp(Item article) {
-        Singleton.Companion.getInstance().setPlayList(null);
-        Singleton.Companion.getInstance().setLastArticle(article);
+        Singleton.INSTANCE.setPlayList(null);
+        Singleton.INSTANCE.setLastArticle(article);
         registerReceiver();
-        if (Singleton.Companion.getInstance().getService() != null) {
-            mMP3Service = Singleton.Companion.getInstance().getService();
+        if (Singleton.INSTANCE.getService() != null) {
+            mMP3Service = Singleton.INSTANCE.getService();
         }
         if (mMP3Service != null && mMP3Service.isPlayOrPause()) {
             mMP3Service.stop4Play();
@@ -280,10 +280,10 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
                 FROM_BLE,false)){
             return;
         }
-        Singleton.Companion.getInstance().setLastArticle(articles.get(0));
+        Singleton.INSTANCE.setLastArticle(articles.get(0));
         registerReceiver();
-        if (Singleton.Companion.getInstance().getService() != null) {
-            mMP3Service = Singleton.Companion.getInstance().getService();
+        if (Singleton.INSTANCE.getService() != null) {
+            mMP3Service = Singleton.INSTANCE.getService();
         }
         if (mMP3Service != null && mMP3Service.isPlayOrPause()) {
             mMP3Service.stop4Play();
@@ -398,11 +398,11 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         if (!getIntent().getBooleanExtra(FROM_BLE,true)){
             return;
         }
-        Singleton.Companion.getInstance().setPlayList(articles);
-        Singleton.Companion.getInstance().setLastArticle(articles.get(index));
+        Singleton.INSTANCE.setPlayList(articles);
+        Singleton.INSTANCE.setLastArticle(articles.get(index));
         registerReceiver();
-        if (Singleton.Companion.getInstance().getService() != null) {
-            mMP3Service = Singleton.Companion.getInstance().getService();
+        if (Singleton.INSTANCE.getService() != null) {
+            mMP3Service = Singleton.INSTANCE.getService();
         }
         if (mMP3Service != null && mMP3Service.isPlayOrPause()) {
             mMP3Service.stop4Play();
@@ -510,12 +510,12 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             mMP3Service = ((Mp3Binder) service).getService();
-            Singleton.Companion.getInstance().setService(mMP3Service);
+            Singleton.INSTANCE.setService(mMP3Service);
             mMP3Service.bindPlayerView(playerView);
             if (mArticle != null && !mMP3Service.isPlayingNow()) {
                 mMP3Service.stop();
-                if (Singleton.Companion.getInstance().getPlayList() != null) {
-                    mMP3Service.play(Singleton.Companion.getInstance().getPlayList(), mArticle.getTitle(), playerView);
+                if (Singleton.INSTANCE.getPlayList() != null) {
+                    mMP3Service.play(Singleton.INSTANCE.getPlayList(), mArticle.getTitle(), playerView);
                 } else {
                     mMP3Service.play(mArticle.getLink(), mArticle.getTitle(), playerView);
                 }
@@ -527,7 +527,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             mMP3Service = null;
-            Singleton.Companion.getInstance().setService(null);
+            Singleton.INSTANCE.setService(null);
             if (playerView != null) {
                 if (!playNext()) {
                     playerView.hide();
@@ -555,7 +555,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
     protected void onStart() {
         super.onStart();
         if (mMP3Service == null) {
-            mMP3Service = Singleton.Companion.getInstance().getService();
+            mMP3Service = Singleton.INSTANCE.getService();
         }
         if (playerView != null && mMP3Service != null && mMP3Service.isPlayOrPause()) {
             Intent it = new Intent(this, Mp3ServiceImpl.class);
@@ -575,7 +575,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         if (mBound) {
             unbindService(mConnection);
             mMP3Service.unBindPlayerView(playerView);
-            Singleton.Companion.getInstance().setService(mMP3Service);
+            Singleton.INSTANCE.setService(mMP3Service);
         }
         mBound = false;
     }

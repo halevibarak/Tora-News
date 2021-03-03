@@ -18,7 +18,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.barak.tabs.app.Singleton;
 import com.barak.tabs.ui.MainActivity;
@@ -32,7 +31,6 @@ public class BootComplete extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("barakk", "BootComplete");
         SharedPreferences prefs = context.getSharedPreferences(NOTIF_ALLOW, MODE_PRIVATE);
         boolean allow = prefs.getBoolean(NOTIF_ALLOW, false);
         if (allow){
@@ -67,8 +65,8 @@ public class BootComplete extends BroadcastReceiver {
                     context.startActivity(i);
                 }
             } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
-                if (Singleton.Companion.getInstance().getService() != null) {
-                    Singleton.Companion.getInstance().getService().stop();
+                if (Singleton.INSTANCE.getService() != null) {
+                    Singleton.INSTANCE.getService().stop();
                 }
             }
         }

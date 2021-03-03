@@ -15,5 +15,7 @@ data class Item(var title: String,
 
     constructor(title: String, link: String) : this( title,"",link,"","","","","",
             Enclosure(""),emptyList())
+    constructor() : this( "title","","link","","","","","",
+            Enclosure(""),emptyList())
 
 }

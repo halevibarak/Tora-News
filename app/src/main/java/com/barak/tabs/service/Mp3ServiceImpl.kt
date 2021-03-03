@@ -21,7 +21,6 @@ import com.barak.tabs.app.AppUtility
 import com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_ERR
 import com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_TAB_ACTION
 import com.barak.tabs.app.Singleton
-import com.barak.tabs.app.Singleton.Companion.getInstance
 import com.barak.tabs.models.Item
 import com.barak.tabs.notif.NotificationHelper
 import com.barak.tabs.notif.NotificationHelper.PRIMARY_CHANNEL
@@ -71,8 +70,8 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
                 }
                 mUrl = AppUtility.getMainExternalFolder().absolutePath + "/" + mTitle
                 val art = Item(mTitle!! + " ", mUrl!!)
-                Singleton.getInstance().lastArticle = art
-                Singleton.getInstance().service =this
+                Singleton.lastArticle = art
+                Singleton.service =this
                 stop4Play()
                 play(mUrl!!, mTitle!!, null)
                 return Service.START_NOT_STICKY
@@ -95,9 +94,9 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
 
     private fun playPause() {
         if (mPlayer == null) {
-            if (Singleton.getInstance().lastArticle != null) {
-                Singleton.getInstance().service=this
-                play(Singleton.getInstance().lastArticle!!.link, Singleton.getInstance().lastArticle!!.title, null)
+            if (Singleton.lastArticle != null) {
+                Singleton.service=this
+                play(Singleton.lastArticle!!.link, Singleton.lastArticle!!.title, null)
             }
 
             return
@@ -119,7 +118,7 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
     }
 
     override fun play(url: String, title: String, playerView_: PlayerControlView?) {
-        Singleton.getInstance().playList = null
+        Singleton.playList = null
         PlayerWidget.update(applicationContext)
         ListWidget.update(applicationContext)
         if (title != null) mTitle = title
@@ -341,7 +340,7 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
         mMainHandler = null
         mPlayer = null
         mPlayerView = null
-        Singleton.getInstance().service=null
+        Singleton.service=null
 
     }
 
@@ -353,7 +352,7 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
 
         mPlayer?.let {
             var selected = it.currentWindowIndex;
-            getInstance().playList?.let {
+            Singleton.playList?.let {
                 if (it.size > selected){
                     mTitle = it[selected].title
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -388,7 +387,7 @@ class Mp3ServiceImpl : Service(), Mp3Service, Player.EventListener, ExtractorMed
             var selected: Int = 0
             mPlayer?.let {
                 selected =  it.currentWindowIndex
-                getInstance().playList?.let {
+                Singleton.playList?.let {
                     if (it.size > selected){
                         mTitle = it[selected].title
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

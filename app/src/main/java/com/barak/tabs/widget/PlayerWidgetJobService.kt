@@ -27,8 +27,8 @@ class PlayerWidgetJobService : JobIntentService() {
         if (!PlayerWidget.isEnabled(applicationContext)) {
             return
         }
-        if (Singleton.getInstance().service != null) {
-            playbackService = Singleton.getInstance().service
+        if (Singleton.service != null) {
+            playbackService = Singleton.service
         }
         updateViews()
     }
@@ -59,11 +59,11 @@ applicationContext
             }
             views.setOnClickPendingIntent(R.id.butPlay, pitPlay)
         } else {
-            if (Singleton.getInstance().lastArticle == null) {
+            if (Singleton.lastArticle == null) {
                 views.setTextViewText(R.id.txtvTitle,
                         this.getString(R.string.app_name))
             } else {
-                views.setTextViewText(R.id.txtvTitle, Singleton.getInstance().lastArticle!!.title)
+                views.setTextViewText(R.id.txtvTitle, Singleton.lastArticle!!.title)
             }
             views.setOnClickPendingIntent(R.id.layout_left, pitMain)
             views.setOnClickPendingIntent(R.id.butPlay, pitPlay)
