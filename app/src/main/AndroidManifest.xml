@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.barak.tabs">
 
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -11,7 +12,18 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="s" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
     <application
         android:name=".app.App"
         android:allowBackup="true"
@@ -20,20 +32,29 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat"
         android:usesCleartextTraffic="true"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:icon,android:theme,android:name">
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <receiver android:name=".notif.BluetoothConnectionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.bluetooth.BluetoothDevice.ACTION_ACL_CONNECTED" />
+                <action android:name="android.bluetooth.BluetoothDevice.ACTION_ACL_DISCONNECTED" />
+                <action android:name="android.bluetooth.BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED" />
+                <action android:name="android.bluetooth.a2dp.profile.action.CONNECTION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
         <receiver android:name=".notif.MyBroadcastReceiver" />
-<!--        <service android:enabled="true" android:name=".notif.BroadcastService" />-->
         <activity android:name=".ui.WebActivity" />
         <activity
             android:name=".manage.ManageActivity"
@@ -47,14 +68,15 @@
             android:exported="true" />
         <receiver
             android:name=".notif.BootComplete"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
         <!--PlayerWidget-->
-        <receiver android:name=".widget.PlayerWidget">
+        <receiver android:name=".widget.PlayerWidget"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -64,11 +86,12 @@
         </receiver>
         <service
             android:name=".widget.PlayerWidgetJobService"
-            android:exported="false"
+            android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <!--list_widget-->
-        <receiver android:name=".widget_list.ListWidget">
+        <receiver android:name=".widget_list.ListWidget"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -81,11 +104,5 @@
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
     </application>
-    <supports-screens
-        android:anyDensity="true"
-        android:largeScreens="true"
-        android:normalScreens="true"
-        android:resizeable="true"
-        android:smallScreens="true"
-        android:xlargeScreens="true" />
+
 </manifest>

@@ -9,12 +9,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
-import com.barak.tabs.ui.MainActivity;
 import com.barak.tabs.R;
-import com.barak.tabs.app.App;
+import com.barak.tabs.ui.MainActivity;
 
 
 /**
@@ -43,7 +43,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addParentStack(MainActivity.class);
         stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE);
         nb.setContentIntent(resultPendingIntent);
         noti.notify(1200, nb);
     }
@@ -59,7 +59,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addParentStack(MainActivity.class);
         stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE);
         mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(1200, mBuilder.build());

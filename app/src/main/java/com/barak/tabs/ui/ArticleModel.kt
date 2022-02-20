@@ -34,10 +34,6 @@ class ArticleModel(application: Application, mParam: String) : AndroidViewModel(
             articleList.LoadData(this.getApplication(), mParam)
         }
     }
-    fun refreshData_(mParam: String) {
-        refresh.value = 0
-        articleList = JsonLiveData(this.getApplication(), mParam)
-    }
 
     inner class JsonLiveData(context: Context, mParam: String) : MutableLiveData<List<Article>>(), Observer {
         private val mArticles = ArrayList<Article>()

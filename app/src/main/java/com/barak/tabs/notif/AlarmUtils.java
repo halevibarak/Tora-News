@@ -23,7 +23,7 @@ public class AlarmUtils {
     public static void addAlarm(Context context, Intent intent, int notificationId, long time) {
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_IMMUTABLE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent);
@@ -38,7 +38,7 @@ public class AlarmUtils {
 
     public static void cancelAlarm(Context context, Intent intent, int notificationId) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_IMMUTABLE);
         alarmManager.cancel(pendingIntent);
         pendingIntent.cancel();
 
@@ -52,7 +52,7 @@ public class AlarmUtils {
     }
 
     public static boolean hasAlarm(Context context, Intent intent, int notificationId) {
-        return PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_NO_CREATE) != null;
+        return PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_IMMUTABLE) != null;
     }
 
     private static void saveAlarmId(Context context, int id) {

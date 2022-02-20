@@ -12,6 +12,11 @@
  */
 package com.barak.tabs.notif;
 
+import static android.content.Context.MODE_PRIVATE;
+import static com.barak.tabs.ui.ArticleModel.NOTIF_ALLOW;
+import static com.barak.tabs.ui.ArticleModel.START_ALLOW;
+
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -20,16 +25,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.barak.tabs.app.Singleton;
-import com.barak.tabs.ui.MainActivity;
-
-import static android.content.Context.MODE_PRIVATE;
-import static com.barak.tabs.ui.ArticleModel.NOTIF_ALLOW;
-import static com.barak.tabs.ui.ArticleModel.START_ALLOW;
-
 public class BootComplete extends BroadcastReceiver {
 
-    BroadcastService mSMSreceiver = new BroadcastService();
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -37,44 +34,19 @@ public class BootComplete extends BroadcastReceiver {
         SharedPreferences prefs = context.getSharedPreferences(NOTIF_ALLOW, MODE_PRIVATE);
         boolean allow = prefs.getBoolean(START_ALLOW, false);
         if (allow){
-            Log.d("barakk", "checkStartVpnOnBoot");
-            mSMSreceiver = new BroadcastService();
-            checkStartVpnOnBoot(context,mSMSreceiver);
+            startRegisterReceiver(context, new BluetoothConnectionReceiver());
         }
 
     }
 
-    public static void checkStartVpnOnBoot(Context context, BroadcastService mSMSreceiver) {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
-        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-        context.getApplicationContext().registerReceiver(mSMSreceiver, filter);
+    public static void startRegisterReceiver(Context context, BluetoothConnectionReceiver receiver) {
+        Log.d("barakk", "registerReceiver");
+        IntentFilter filter1 = new IntentFilter();
+        filter1.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        filter1.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+        filter1.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        context.registerReceiver(receiver, filter1);
     }
 
-    public static class BroadcastService extends BroadcastReceiver {
 
-        public static final String FROM_BLE = "from_ble";
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            Log.d("barakk", "onReceive:"+action);
-            if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
-                SharedPreferences prefs = context.getSharedPreferences(NOTIF_ALLOW, MODE_PRIVATE);
-                boolean allow = prefs.getBoolean(START_ALLOW, false);
-                if (allow){
-                    Intent i = new Intent(context, MainActivity.class);
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    i.putExtra(FROM_BLE, true);
-                    context.startActivity(i);
-                    Log.d("barakk", "startActivity");
-                }
-            } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
-                if (Singleton.Companion.getInstance().getService() != null) {
-                    Singleton.Companion.getInstance().getService().stop();
-                }
-            }
-        }
-    }
 }

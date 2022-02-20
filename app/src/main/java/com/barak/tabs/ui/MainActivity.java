@@ -1,5 +1,13 @@
 package com.barak.tabs.ui;
 
+import static com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_ERR;
+import static com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_TAB;
+import static com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_TAB_ACTION;
+import static com.barak.tabs.manage.ManageActivity.NOTIF_HOUR;
+import static com.barak.tabs.manage.ManageActivity.NOTIF_MINUT;
+import static com.barak.tabs.notif.BluetoothConnectionReceiver.FROM_BLE;
+import static com.barak.tabs.ui.ArticleModel.NOTIF_ALLOW;
+
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -45,6 +53,8 @@ import com.barak.tabs.model.MyTab;
 import com.barak.tabs.network.ConnectivityHelper;
 import com.barak.tabs.network.DownloadExecelDataSource;
 import com.barak.tabs.notif.AlarmUtils;
+import com.barak.tabs.notif.BluetoothConnectionReceiver;
+import com.barak.tabs.notif.BootComplete;
 import com.barak.tabs.notif.MyBroadcastReceiver;
 import com.barak.tabs.service.Mp3Binder;
 import com.barak.tabs.service.Mp3Service;
@@ -67,14 +77,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
-
-import static com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_ERR;
-import static com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_TAB;
-import static com.barak.tabs.app.DownloadToExtStrService.DOWNLOAD_TAB_ACTION;
-import static com.barak.tabs.manage.ManageActivity.NOTIF_HOUR;
-import static com.barak.tabs.manage.ManageActivity.NOTIF_MINUT;
-import static com.barak.tabs.notif.BootComplete.BroadcastService.FROM_BLE;
-import static com.barak.tabs.ui.ArticleModel.NOTIF_ALLOW;
 
 
 public class MainActivity extends AppCompatActivity implements FragmentArticle.OnCompleteListener, Observer {
@@ -112,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         tabLayout = findViewById(R.id.tabs);
 
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), App.getVisTabs());
-        updateTabs(this);
+        updateTabs( this);
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.setOffscreenPageLimit(1);
         tabLayout.setupWithViewPager(viewPager);
@@ -121,6 +123,9 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         SharedPreferences prefs = getSharedPreferences(NOTIF_ALLOW, MODE_PRIVATE);
         if (prefs.getBoolean(NOTIF_ALLOW, true)) {
             startAlert();
+        }
+        if (prefs.getBoolean(ArticleModel.START_ALLOW, false)) {
+            BootComplete.startRegisterReceiver(this,new BluetoothConnectionReceiver());
         }
         Intent intent = getIntent();
         if (intent.getBooleanExtra(DOWNLOAD_TAB, false)) {
@@ -275,18 +280,16 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
     }
 
     public void playMp(List<Article> articles) {
-        if (!getIntent().getBooleanExtra(
-                FROM_BLE,false)){
-            return;
-        }
         Singleton.Companion.getInstance().setLastArticle(articles.get(0));
+        Singleton.Companion.getInstance().setPlayList(articles);
         registerReceiver();
         if (Singleton.Companion.getInstance().getService() != null) {
             mMP3Service = Singleton.Companion.getInstance().getService();
         }
         if (mMP3Service != null && mMP3Service.isPlayOrPause()) {
             mMP3Service.stop4Play();
-            mMP3Service.play(articles, 0, playerView);
+
+            mMP3Service.play( 0, playerView);
             return;
         }
         Intent it = new Intent(this, Mp3ServiceImpl.class);
@@ -394,8 +397,8 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
 
     @Override
     public void playMp(List<Article> articles, int index) {
-        if (index<0) return;
-        if (!getIntent().getBooleanExtra(FROM_BLE,true)){
+        if (index < 0) return;
+        if (!getIntent().getBooleanExtra(FROM_BLE, true)) {
             return;
         }
         Singleton.Companion.getInstance().setPlayList(articles);
@@ -406,7 +409,7 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
         }
         if (mMP3Service != null && mMP3Service.isPlayOrPause()) {
             mMP3Service.stop4Play();
-            mMP3Service.play(articles, index, playerView);
+            mMP3Service.play( index, playerView);
             return;
         }
         Intent it = new Intent(this, Mp3ServiceImpl.class);
@@ -512,16 +515,17 @@ public class MainActivity extends AppCompatActivity implements FragmentArticle.O
             mMP3Service = ((Mp3Binder) service).getService();
             Singleton.Companion.getInstance().setService(mMP3Service);
             mMP3Service.bindPlayerView(playerView);
-            if (mArticle != null && !mMP3Service.isPlayingNow()) {
-                mMP3Service.stop();
+            if (mArticle != null) {
                 int index = 0;
-                for (int i = 0;i<Singleton.Companion.getInstance().getPlayList().size();i++){
-                    if (Singleton.Companion.getInstance().getPlayList().get(i).getTitle().equals(mArticle.getTitle())){
-                        index = i;
+                if (Singleton.Companion.getInstance().getPlayList() != null) {
+                    for (int i = 0; i < Singleton.Companion.getInstance().getPlayList().size(); i++) {
+                        if (Singleton.Companion.getInstance().getPlayList().get(i).getTitle().equals(mArticle.getTitle())) {
+                            index = i;
+                        }
                     }
                 }
                 if (Singleton.Companion.getInstance().getPlayList() != null) {
-                    mMP3Service.play(Singleton.Companion.getInstance().getPlayList(), index, playerView);
+                    mMP3Service.play(index, playerView);
                 } else {
                     mMP3Service.play(mArticle.getLink(), mArticle.getTitle(), playerView);
                 }

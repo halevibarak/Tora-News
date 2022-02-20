@@ -4,8 +4,6 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:paddingRight="15dp"
-    android:paddingLeft="15dp"
     android:orientation="vertical"
     android:layoutDirection="ltr">
 
@@ -19,15 +17,15 @@
         <ImageView
             android:id="@+id/stop_v"
             style="Custom Notification Title"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:gravity="top"
             android:src="@drawable/stop_g" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="73dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:orientation="vertical">
@@ -41,8 +39,8 @@
                 android:layout_gravity="right"
                 android:gravity="center|right"
                 android:layout_weight="1"
-                android:padding="4dp"
-                android:lineSpacingExtra="0dp"
+                android:maxLines="2"
+                android:paddingRight="2dp"
                 android:ellipsize="end" />
 
 
@@ -50,8 +48,8 @@
         <ImageView
             android:id="@+id/play_prev"
             style="Custom Notification Title"
-            android:layout_width="34dp"
-            android:layout_height="34dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:padding="1dp"
             android:gravity="center"
             android:src="@drawable/a_prev"
@@ -61,8 +59,8 @@
        <ImageView
             android:id="@+id/play_v"
             style="Custom Notification Title"
-            android:layout_width="34dp"
-            android:layout_height="34dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:padding="1dp"
             android:gravity="center"
             android:src="@drawable/a_play"
@@ -72,8 +70,8 @@
 
         <ImageView
             android:id="@+id/play_n"
-            android:layout_width="34dp"
-            android:layout_height="34dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:padding="1dp"
             android:gravity="center"
             android:src="@drawable/a_next"

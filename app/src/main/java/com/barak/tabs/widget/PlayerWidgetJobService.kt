@@ -40,10 +40,12 @@ applicationContext
         val views = RemoteViews(packageName, R.layout.widget_player)
         val itPlay = Intent(this, Mp3ServiceImpl::class.java)
         itPlay.putExtra(EXTRA_ACAO, ACAO_PLAY)
-        val pitPlay = PendingIntent.getService(this, 1, itPlay, 0)
+        val pitPlay = PendingIntent.getService(this, 1, itPlay, PendingIntent.FLAG_IMMUTABLE)
         val mainIntent = Intent(applicationContext, MainActivity::class.java)
         mainIntent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-        val pitMain = PendingIntent.getActivity(applicationContext, 4, mainIntent, 0)
+        val pitMain = PendingIntent.getActivity(applicationContext, 4, mainIntent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
 
         if (playbackService != null) {
             views.setOnClickPendingIntent(R.id.layout_left, pitMain)

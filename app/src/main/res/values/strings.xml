@@ -35,7 +35,7 @@
     <string name="start_title">Jew RSS</string>
 
     <string name="return_all">התראה כל יום חול בחמש בערב</string>
-    <string name="start_self">פתיחת האפליקצייה ונגן בחיבור לבלוטוס</string>
+    <string name="start_self">המשכיות ניגון בחיבור וניתוק מכשיר בלוטוס</string>
     <string name="main_7_m">http://www.inn.co.il/Rss.aspx</string>
     <string name="no_record">תקלה - בדוק את חיבור האינטרנט</string>
     <string name="notif_text_toch">יש להקיש כדי לשמוע</string>

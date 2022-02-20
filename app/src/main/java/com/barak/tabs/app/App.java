@@ -22,6 +22,7 @@ import java.util.List;
 
 public class App extends Application {
 
+
     public static final String TAG = App.class
             .getSimpleName();
     private static final String TABS = "TABS_NEW";
@@ -32,10 +33,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         mInstance = this;
-//        if (LeakCanary.isInAnalyzerProcess(this)) {
-//            return;
-//        }
-//        LeakCanary.install(this);
     }
 
     private static synchronized App getInstance() {
@@ -79,9 +76,9 @@ public class App extends Application {
         String json = appSharedPrefs.getString(TABS, "");
         if (json.equals("")) {
             ArrayList<MyTab> start_ = new ArrayList<>();
+            start_.add(new MyTab("ישיבה", getInstance().getString(R.string.main_y), MyTab.TabType.REST, true));
             start_.add(new MyTab("ערוץ 7", getInstance().getString(R.string.main_7), MyTab.TabType.REST, true));
             start_.add(new MyTab("מבזקים 7", getInstance().getString(R.string.main_7_m), MyTab.TabType.REST, false));
-            start_.add(new MyTab("ישיבה", getInstance().getString(R.string.main_y), MyTab.TabType.REST, true));
             start_.add(new MyTab("מאיר מומלצים", getInstance().getString(R.string.main_like), MyTab.TabType.MEIR, false));
             start_.add(new MyTab("ברכה פיד", getInstance().getString(R.string.main_b), MyTab.TabType.REST, false));
             start_.add(new MyTab("מכון מאיר", getInstance().getString(R.string.main_url), MyTab.TabType.MEIR, false));

@@ -1,5 +1,8 @@
 package com.barak.tabs.widget_list;
 
+import static com.barak.tabs.service.Mp3ServiceImpl.ACAO_PLAY;
+import static com.barak.tabs.service.Mp3ServiceImpl.EXTRA_ACAO;
+
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -15,9 +18,6 @@ import androidx.annotation.NonNull;
 import com.barak.tabs.R;
 import com.barak.tabs.service.Mp3ServiceImpl;
 import com.barak.tabs.ui.MainActivity;
-
-import static com.barak.tabs.service.Mp3ServiceImpl.ACAO_PLAY;
-import static com.barak.tabs.service.Mp3ServiceImpl.EXTRA_ACAO;
 
 /**
  * Created by Barak Halevi on 05/12/2018.
@@ -42,12 +42,12 @@ public class ListWidget extends AppWidgetProvider {
         }
         Intent mainIntent = new Intent(context, MainActivity.class);
         mainIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pitMain = PendingIntent.getActivity(context, 4, mainIntent, 0);
+        PendingIntent pitMain = PendingIntent.getActivity(context, 4, mainIntent, PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.widget_layout_main, pitMain);
 
         Intent templateIntent = new Intent(context, Mp3ServiceImpl.class);
         templateIntent.putExtra(EXTRA_ACAO, ACAO_PLAY);
-        PendingIntent templatePendingIntent =PendingIntent.getService(context, 1, templateIntent, 0);
+        PendingIntent templatePendingIntent =PendingIntent.getService(context, 1, templateIntent, PendingIntent.FLAG_IMMUTABLE);
         views.setPendingIntentTemplate(R.id.widget_list,
                 templatePendingIntent);
         int appWidgetIds[] = manager.getAppWidgetIds(

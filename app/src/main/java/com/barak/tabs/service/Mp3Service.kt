@@ -7,6 +7,7 @@ import com.google.android.exoplayer2.ui.PlayerControlView
 interface Mp3Service {
     fun play(arquivo: String, title: String, playerView: PlayerControlView?)
     fun stop()
+    fun pause()
     fun isPlayOrPause(): Boolean
     fun stop4Play()
     fun bindPlayerView(playerView: PlayerControlView)
@@ -15,5 +16,6 @@ interface Mp3Service {
 
     fun getTitle(): String
     fun isPlayingNow(): Boolean
-    fun play(articles: List<Article>, index:Int, playerView: PlayerControlView)
+    fun play(index:Int, playerView: PlayerControlView)
+    fun playIfYouCan()
 }
